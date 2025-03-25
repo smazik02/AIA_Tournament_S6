@@ -12,7 +12,13 @@ encounters
    24 hours. The user account becomes active only after it is confirmed by the link.
 2. The system allows its users to log in (+ _I forgot my password_ option).
 3. The main page displays a list of upcoming tournaments (with paging, 10 tournaments per page), also visible to users
-   who aren't logged in/
+   who aren't logged in.
+4. After clicking on any given tournament, a details page is displayed which basic tournament information (name,
+   discipline, organizer, time, Google Maps with location, max participants, participation application deadline, sponsor
+   logos, number of ranked players) with the option of applying to participate in the tournament. If the logged-in user
+   is this event’s organizer, he can also edit the tournament information.
+5. Each user can organize his own tournament. All required information needs to be provided. You can’t host tournaments
+   in the past.
 
 # Functional requirements (2 points)
 
@@ -29,12 +35,11 @@ encounters
 # Functional requirements (3 points)
 
 1. All above
-2. After the participation application deadline passes, the system selects the tournament ladder, seeding the seeded
-   players according to their ranking. The way the ladder is organized and the players selected as well as the system of
-   play should correspond to a discipline selected by the student.
-3. After the participation application deadline passes, the system selects the tournament ladder, seeding the seeded
-   players according to their ranking. The way the ladder is organized and the players selected as well as the system of
-   play should correspond to a discipline selected by the student.
+2. After selection, users can view the ladder on the tournament page. From now on, the users can enter the results of
+   their games played. For simplicity, you can assume that it is sufficient to select the winner of the encounter,
+   however, both participants have to select the same winner. If the participants enter conflicting results, both
+   results are withdrawn, and they can reenter the result
+3. When the result is entered successfully, the tournament ladder (scoreboard) is updated.
 
 # Functional requirements (4 points)
 
@@ -136,12 +141,16 @@ encounters
 
 # Required pages
 
-- **Main page** - paged list of upcoming tournaments, available even if the user is not logged in
-- **Login page** - logging in
-- **Register page** - registering
-- **Forgot password page** - setting new password
-- **Tournament** - detailed page for a tournament (tournament data, participate option, edit option to organizers,
-  tournament ladder after it begins)
-- **Tournament form** - for the organizer, adding and editing tournaments
-- **Result form** - inputting the match result
-- **User page** - upcoming games and tournaments for which they've registered
+- **/** - Main page, paged list of upcoming tournaments, available even if the user is not logged in
+- **/login** - Login page
+- **/register** - Register page
+- **/email/\[email_id\]** - Email confirmation page
+- **/password** - Password reset request page
+- **/password/\[password_id\]** - Password reset page
+- **/tournament/new** - Organizing a new tournament
+- **/tournament/\[tournament_id\]** - Tournament, detailed page for a tournament (tournament data, participate option,
+  edit option to organizers, tournament ladder after it begins)
+- **/tournament/\[tournament_id\]/signup** - Signup page for the tournament
+- **/tournament/\[tournament_id\]/form** - Tournament form, editing (only for the organizer)
+- **/result/\[result_id\]** - Result form, inputting the match result
+- **/user/\[user_id\]** - User page, upcoming games and tournaments for which they've registered
