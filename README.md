@@ -60,7 +60,7 @@ encounters
 
 - JavaScript/TypeScript
 - Next.js framework for both frontend and backend (fullstack app)
-- ChakraUI component library
+- MaterialUI component library
 - PostgreSQL database
 - Prisma ORM
 - Resend mail service
