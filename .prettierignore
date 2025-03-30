@@ -1,0 +1,19 @@
+# dependencies
+/node_modules
+/.pnp
+.pnp.*
+.yarn/*
+pnpm-lock.yaml
+package.json
+tsconfig.json
+.prettierrc
+
+# testing
+/coverage
+
+# next.js
+/.next/
+/out/
+
+# production
+/build
