@@ -3,13 +3,18 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
+    "init-env": "pnpm install && cp .env .env.local && echo Fill out .env.local before proceeding with db:init",
     "dev": "next dev",
     "build": "next build",
+    "build:dev": "dotenv -e .env.local -- pnpm build",
     "start": "next start",
     "lint": "next lint",
     "format": "prettier . --write",
-    "format-check": "prettier . --check",
-    "studio": "pnpx prisma studio"
+    "format:check": "prettier . --check",
+    "db:init": "docker compose up --build -d && pnpm db:generate && pnpm db:push",
+    "db:generate": "dotenv -e .env.local -- pnpx prisma generate",
+    "db:push": "dotenv -e .env.local -- pnpx prisma db push",
+    "db:studio": "pnpx prisma studio"
   },
   "dependencies": {
     "@emotion/cache": "^11.14.0",
@@ -31,6 +36,7 @@
     "@types/node": "^20",
     "@types/react": "^19",
     "@types/react-dom": "^19",
+    "dotenv-cli": "^8.0.0",
     "eslint": "^9",
     "eslint-config-next": "15.2.4",
     "prettier": "3.5.3",
