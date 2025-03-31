@@ -1,3 +1,21 @@
+# Running
+
+### You'll need:
+
+- Node.js (version 22)
+- pnpm package manager (installed either natively in the OS, or through `npm install pnpm -g`)
+- Docker Engine
+
+### To run the project for the first time:
+
+- run `pnpm init-env` to install all dependencies and create required .env files
+- fill out the .env files as instructed (they include things like db connection string, authentication library secret,
+  etc.)
+- run `pnpm db:init` - it builds and runs a database Docker container, generates files required by Prisma ORM and pushes
+  all migrations to that database (if you haven't filled out .env files yet, this will throw an error)
+- run `pnpm dev` to serve the app locally in a development environment
+- alternatively build the whole app with `pnpm build`, and then serve it with `pnpm start`
+
 # Project description
 
 The aim of this project is to create an online tournament system. The system should allow its users to conduct
