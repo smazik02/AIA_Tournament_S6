@@ -1,6 +1,8 @@
 'use client';
 
 import {
+    Alert,
+    AlertTitle,
     Box,
     Button,
     Divider,
@@ -12,6 +14,8 @@ import {
 import { GoogleIcon } from '@/components/CustomIcons';
 import NextLink from 'next/link';
 import { FormEvent, useState } from 'react';
+import { authClient } from '@/lib/auth-client';
+import { useRouter } from 'next/navigation';
 
 function SignUpForm() {
     const [nameError, setNameError] = useState(false);
@@ -22,6 +26,11 @@ function SignUpForm() {
 
     const [passwordError, setPasswordError] = useState(false);
     const [passwordErrorMessage, setPasswordErrorMessage] = useState('');
+
+    const [authError, setAuthError] = useState(false);
+    const [authErrorMessage, setAuthErrorMessage] = useState('');
+
+    const router = useRouter();
 
     const validateInputs = (formData: FormData) => {
         const name = formData.get('name')?.toString();
@@ -62,12 +71,34 @@ function SignUpForm() {
         return isValid;
     };
 
-    const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
+    const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
+        event.preventDefault();
+
         const formData = new FormData(event.currentTarget);
         if (!validateInputs(formData)) {
-            event.preventDefault();
             return;
         }
+
+        const name = formData.get('name')?.toString() ?? '';
+        const email = formData.get('email')?.toString() ?? '';
+        const password = formData.get('password')?.toString() ?? '';
+
+        const { error } = await authClient.signUp.email({
+            name,
+            email,
+            password,
+        });
+
+        if (error !== null) {
+            setAuthError(true);
+            setAuthErrorMessage(error.message ?? '');
+            return;
+        } else {
+            setAuthError(false);
+            setAuthErrorMessage('');
+        }
+
+        router.push('/');
     };
 
     return (
@@ -148,6 +179,12 @@ function SignUpForm() {
                     </MuiLink>
                 </Typography>
             </Box>
+            {authError && (
+                <Alert severity="error">
+                    <AlertTitle>Error occurred during sign up!</AlertTitle>
+                    {authErrorMessage}
+                </Alert>
+            )}
         </Box>
     );
 }

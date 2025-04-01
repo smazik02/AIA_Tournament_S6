@@ -1,6 +1,8 @@
 'use client';
 
 import {
+    Alert,
+    AlertTitle,
     Box,
     Button,
     Checkbox,
@@ -15,6 +17,8 @@ import { GoogleIcon } from '@/components/CustomIcons';
 import NextLink from 'next/link';
 import { FormEvent, useState } from 'react';
 import ForgotPasswordDialog from '@/components/auth/ForgotPasswordDialog';
+import { authClient } from '@/lib/auth-client';
+import { useRouter } from 'next/navigation';
 
 function SignInForm() {
     const [emailError, setEmailError] = useState(false);
@@ -23,7 +27,14 @@ function SignInForm() {
     const [passwordError, setPasswordError] = useState(false);
     const [passwordErrorMessage, setPasswordErrorMessage] = useState('');
 
+    const [authError, setAuthError] = useState(false);
+    const [authErrorMessage, setAuthErrorMessage] = useState('');
+
+    const [rememberMe, setRememberMe] = useState(false);
+
     const [isResetPasswordOpen, setIsResetPasswordOpen] = useState(false);
+
+    const router = useRouter();
 
     const validateInputs = (formData: FormData) => {
         const email = formData.get('email')?.toString();
@@ -54,12 +65,33 @@ function SignInForm() {
         return isValid;
     };
 
-    const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
+    const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
+        event.preventDefault();
+
         const formData = new FormData(event.currentTarget);
         if (!validateInputs(formData)) {
-            event.preventDefault();
             return;
         }
+
+        const email = formData.get('email')?.toString() ?? '';
+        const password = formData.get('password')?.toString() ?? '';
+
+        const { error } = await authClient.signIn.email({
+            email,
+            password,
+            rememberMe,
+        });
+
+        if (error !== null) {
+            setAuthError(true);
+            setAuthErrorMessage(error.message ?? '');
+            return;
+        } else {
+            setAuthError(false);
+            setAuthErrorMessage('');
+        }
+
+        router.push('/');
     };
 
     return (
@@ -100,7 +132,14 @@ function SignInForm() {
                     />
                 </FormControl>
                 <FormControlLabel
-                    control={<Checkbox value="remember" color="primary" />}
+                    control={
+                        <Checkbox
+                            value="remember"
+                            color="primary"
+                            checked={rememberMe}
+                            onChange={(e) => setRememberMe(e.target.checked)}
+                        />
+                    }
                     label="Remember me"
                 />
                 <Button type="submit" fullWidth variant="contained">
@@ -145,6 +184,12 @@ function SignInForm() {
                         </MuiLink>
                     </Typography>
                 </Box>
+                {authError && (
+                    <Alert severity="error">
+                        <AlertTitle>Error occurred during sign in!</AlertTitle>
+                        {authErrorMessage}
+                    </Alert>
+                )}
             </Box>
         </>
     );
