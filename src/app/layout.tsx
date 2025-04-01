@@ -1,8 +1,9 @@
 import { ReactNode } from 'react';
 import { AppRouterCacheProvider } from '@mui/material-nextjs/v13-appRouter';
 import { Roboto } from 'next/font/google';
-import { ThemeProvider } from '@mui/material';
+import { CssBaseline, ThemeProvider } from '@mui/material';
 import theme from '@/theme';
+import styles from './root.module.css';
 
 export interface RootLayoutProps {
     children: ReactNode;
@@ -17,10 +18,16 @@ const roboto = Roboto({
 
 function RootLayout({ children }: RootLayoutProps) {
     return (
-        <html lang="en" className={roboto.variable}>
-            <body>
+        <html lang="en" className={`${roboto.variable} ${styles.root}`}>
+            <head>
+                <title>AIA Tournament</title>
+            </head>
+            <body className={styles.root}>
                 <AppRouterCacheProvider>
-                    <ThemeProvider theme={theme}>{children}</ThemeProvider>
+                    <ThemeProvider theme={theme}>
+                        <CssBaseline />
+                        {children}
+                    </ThemeProvider>
                 </AppRouterCacheProvider>
             </body>
         </html>
