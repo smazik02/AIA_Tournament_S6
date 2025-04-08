@@ -29,6 +29,11 @@ export default function Home() {
                         Logout
                     </Button>
                 )}
+                {!session && (
+                    <Button variant="contained" onClick={() => router.push('/auth/sign-up')}>
+                        Log in/Sign up
+                    </Button>
+                )}
             </Stack>
         </Container>
     );
