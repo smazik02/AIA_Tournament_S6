@@ -15,7 +15,6 @@ import { GoogleIcon } from '@/components/CustomIcons';
 import NextLink from 'next/link';
 import { FormEvent, useState } from 'react';
 import { authClient } from '@/lib/auth-client';
-import { useRouter } from 'next/navigation';
 
 function SignUpForm() {
     const [nameError, setNameError] = useState(false);
@@ -30,7 +29,7 @@ function SignUpForm() {
     const [authError, setAuthError] = useState(false);
     const [authErrorMessage, setAuthErrorMessage] = useState('');
 
-    const router = useRouter();
+    const [afterSignUp, setAfterSignUp] = useState(false);
 
     const validateInputs = (formData: FormData) => {
         const name = formData.get('name')?.toString();
@@ -98,8 +97,17 @@ function SignUpForm() {
             setAuthErrorMessage('');
         }
 
-        router.push('/');
+        setAfterSignUp(true);
     };
+
+    if (afterSignUp) {
+        return (
+            <>
+                A verification mail has been sent. Please verify your email
+                before signing in.
+            </>
+        );
+    }
 
     return (
         <Box
