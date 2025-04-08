@@ -1,17 +1,18 @@
 'use client';
 
 import { FormEvent, useState } from 'react';
-import { useRouter } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 import { Box, Button, FormControl, TextField } from '@mui/material';
 import { authClient } from '@/lib/auth-client';
 
 function PasswordResetForm() {
-    const token = new URLSearchParams(window.location.search).get('token');
-
     const [passwordError, setPasswordError] = useState(false);
     const [passwordErrorMessage, setPasswordErrorMessage] = useState('');
 
     const router = useRouter();
+
+    const searchParams = useSearchParams();
+    const token = searchParams.get('token');
 
     const validateInputs = (formData: FormData) => {
         const newPassword = formData.get('new-password')?.toString();
