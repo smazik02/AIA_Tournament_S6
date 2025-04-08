@@ -53,9 +53,7 @@ function SignInForm() {
 
         if (password == undefined || password.length < 6) {
             setPasswordError(true);
-            setPasswordErrorMessage(
-                'Password must be at least 6 characters long.',
-            );
+            setPasswordErrorMessage('Password must be at least 6 characters long.');
             isValid = false;
         } else {
             setPasswordError(false);
@@ -96,15 +94,8 @@ function SignInForm() {
 
     return (
         <>
-            <ForgotPasswordDialog
-                isOpen={isResetPasswordOpen}
-                handleClose={() => setIsResetPasswordOpen(false)}
-            />
-            <Box
-                component="form"
-                sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}
-                onSubmit={handleSubmit}
-            >
+            <ForgotPasswordDialog isOpen={isResetPasswordOpen} handleClose={() => setIsResetPasswordOpen(false)} />
+            <Box component="form" sx={{ display: 'flex', flexDirection: 'column', gap: 2 }} onSubmit={handleSubmit}>
                 <FormControl>
                     <TextField
                         autoComplete="email"
@@ -174,12 +165,7 @@ function SignInForm() {
                     </Button>
                     <Typography sx={{ textAlign: 'center' }}>
                         Don&apos;t have an account?{' '}
-                        <MuiLink
-                            href="/auth/sign-up"
-                            component={NextLink}
-                            variant="body2"
-                            sx={{ alignSelf: 'center' }}
-                        >
+                        <MuiLink href="/auth/sign-up" component={NextLink} variant="body2" sx={{ alignSelf: 'center' }}>
                             Sign up
                         </MuiLink>
                     </Typography>

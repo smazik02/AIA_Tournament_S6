@@ -14,10 +14,7 @@ export interface ForgotPasswordDialogProps {
     handleClose: () => void;
 }
 
-function ForgotPasswordDialog({
-    isOpen,
-    handleClose,
-}: ForgotPasswordDialogProps) {
+function ForgotPasswordDialog({ isOpen, handleClose }: ForgotPasswordDialogProps) {
     return (
         <Dialog
             open={isOpen}
@@ -34,12 +31,9 @@ function ForgotPasswordDialog({
             }}
         >
             <DialogTitle>Reset password</DialogTitle>
-            <DialogContent
-                sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}
-            >
+            <DialogContent sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
                 <DialogContentText>
-                    Enter your account&apos;s email address, and we&apos;ll send
-                    you a reset password link.
+                    Enter your account&apos;s email address, and we&apos;ll send you a reset password link.
                 </DialogContentText>
                 <OutlinedInput
                     autoFocus

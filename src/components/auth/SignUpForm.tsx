@@ -58,9 +58,7 @@ function SignUpForm() {
 
         if (password == undefined || password.length < 6) {
             setPasswordError(true);
-            setPasswordErrorMessage(
-                'Password must be at least 6 characters long.',
-            );
+            setPasswordErrorMessage('Password must be at least 6 characters long.');
             isValid = false;
         } else {
             setPasswordError(false);
@@ -101,20 +99,11 @@ function SignUpForm() {
     };
 
     if (afterSignUp) {
-        return (
-            <>
-                A verification mail has been sent. Please verify your email
-                before signing in.
-            </>
-        );
+        return <>A verification mail has been sent. Please verify your email before signing in.</>;
     }
 
     return (
-        <Box
-            component="form"
-            sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}
-            onSubmit={handleSubmit}
-        >
+        <Box component="form" sx={{ display: 'flex', flexDirection: 'column', gap: 2 }} onSubmit={handleSubmit}>
             <FormControl>
                 <TextField
                     autoComplete="name"
@@ -177,12 +166,7 @@ function SignUpForm() {
                 </Button>
                 <Typography sx={{ textAlign: 'center' }}>
                     Already have an account?{' '}
-                    <MuiLink
-                        href="/auth/sign-in"
-                        component={NextLink}
-                        variant="body2"
-                        sx={{ alignSelf: 'center' }}
-                    >
+                    <MuiLink href="/auth/sign-in" component={NextLink} variant="body2" sx={{ alignSelf: 'center' }}>
                         Sign in
                     </MuiLink>
                 </Typography>
