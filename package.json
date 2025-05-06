@@ -14,6 +14,7 @@
     "db:init": "docker compose up --build -d && pnpm db:generate && pnpm db:push",
     "db:generate": "dotenv -e .env.local -- pnpx prisma generate",
     "db:push": "dotenv -e .env.local -- pnpx prisma db push",
+    "db:migrate": "dotenv -e .env.local -- pnpx prisma migrate dev --name",
     "db:studio": "dotenv -e .env.local -- pnpx prisma studio"
   },
   "dependencies": {

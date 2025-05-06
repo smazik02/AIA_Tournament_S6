@@ -15,18 +15,20 @@ datasource db {
 }
 
 model User {
-  id            String    @id
-  name          String
-  email         String
-  emailVerified Boolean
-  image         String?
-  createdAt     DateTime
-  updatedAt     DateTime
-  sessions      Session[]
-  accounts      Account[]
+  id                   String                   @id
+  name                 String
+  email                String
+  emailVerified        Boolean
+  image                String?
+  createdAt            DateTime
+  updatedAt            DateTime
+  sessions             Session[]
+  accounts             Account[]
+  organizedTournaments Tournament[]
+  joinedTournaments    TournamentParticipants[]
 
   @@unique([email])
-  @@map("user")
+  @@map("users")
 }
 
 model Session {
@@ -41,7 +43,7 @@ model Session {
   user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@unique([token])
-  @@map("session")
+  @@map("sessions")
 }
 
 model Account {
@@ -60,7 +62,7 @@ model Account {
   createdAt             DateTime
   updatedAt             DateTime
 
-  @@map("account")
+  @@map("accounts")
 }
 
 model Verification {
@@ -71,5 +73,45 @@ model Verification {
   createdAt  DateTime?
   updatedAt  DateTime?
 
-  @@map("verification")
+  @@map("verifications")
+}
+
+model Tournament {
+  id                  String                   @id @default(uuid(4))
+  name                String
+  discipline          String
+  time                DateTime
+  location            String
+  maxParticipants     Int
+  applicationDeadline DateTime
+  creationDate        DateTime
+  sponsors            Sponsor[]
+  organizerId         String
+  organizer           User                     @relation(fields: [organizerId], references: [id])
+  participants        TournamentParticipants[]
+
+  @@map("tournaments")
+}
+
+model TournamentParticipants {
+  id               String     @id @default(uuid(4))
+  licenseNumber    Int
+  ranking          Int
+  registrationDate DateTime
+  userId           String
+  user             User       @relation(fields: [userId], references: [id])
+  tournamentId     String
+  tournament       Tournament @relation(fields: [tournamentId], references: [id])
+
+  @@unique([licenseNumber, ranking])
+  @@map("tournament_participants")
+}
+
+model Sponsor {
+  id          String       @id @default(uuid(4))
+  name        String
+  logoUrl     String
+  tournaments Tournament[]
+
+  @@map("sponsors")
 }
