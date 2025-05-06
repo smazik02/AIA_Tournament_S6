@@ -19,6 +19,7 @@ import { FormEvent, useState } from 'react';
 import ForgotPasswordDialog from '@/components/auth/ForgotPasswordDialog';
 import { authClient } from '@/lib/auth-client';
 import { useRouter } from 'next/navigation';
+import { MAX_PASSWORD_LENGTH, MIN_PASSWORD_LENGTH } from '@/lib/auth';
 
 function SignInForm() {
     const [emailError, setEmailError] = useState(false);
@@ -51,9 +52,13 @@ function SignInForm() {
             setEmailErrorMessage('');
         }
 
-        if (password == undefined || password.length < 6) {
+        if (password == undefined || password.length < MIN_PASSWORD_LENGTH) {
             setPasswordError(true);
-            setPasswordErrorMessage('Password must be at least 6 characters long.');
+            setPasswordErrorMessage(`Password must be at least ${MIN_PASSWORD_LENGTH} characters long.`);
+            isValid = false;
+        } else if (password.length > MAX_PASSWORD_LENGTH) {
+            setPasswordError(true);
+            setPasswordErrorMessage(`Password must be at most ${MAX_PASSWORD_LENGTH} characters long.`);
             isValid = false;
         } else {
             setPasswordError(false);
@@ -89,7 +94,7 @@ function SignInForm() {
             setAuthErrorMessage('');
         }
 
-        router.push('/');
+        router.refresh();
     };
 
     return (

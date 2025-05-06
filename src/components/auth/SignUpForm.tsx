@@ -15,6 +15,7 @@ import { GoogleIcon } from '@/components/CustomIcons';
 import NextLink from 'next/link';
 import { FormEvent, useState } from 'react';
 import { authClient } from '@/lib/auth-client';
+import { MAX_PASSWORD_LENGTH, MIN_PASSWORD_LENGTH } from '@/lib/auth';
 
 function SignUpForm() {
     const [nameError, setNameError] = useState(false);
@@ -56,9 +57,13 @@ function SignUpForm() {
             setEmailErrorMessage('');
         }
 
-        if (password == undefined || password.length < 6) {
+        if (password == undefined || password.length < MIN_PASSWORD_LENGTH) {
             setPasswordError(true);
-            setPasswordErrorMessage('Password must be at least 6 characters long.');
+            setPasswordErrorMessage(`Password must be at least ${MIN_PASSWORD_LENGTH} characters long.`);
+            isValid = false;
+        } else if (password.length > MAX_PASSWORD_LENGTH) {
+            setPasswordError(true);
+            setPasswordErrorMessage(`Password must be at most ${MAX_PASSWORD_LENGTH} characters long.`);
             isValid = false;
         } else {
             setPasswordError(false);

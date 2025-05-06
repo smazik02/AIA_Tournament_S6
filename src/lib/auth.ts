@@ -3,6 +3,10 @@ import { prismaAdapter } from 'better-auth/adapters/prisma';
 import prisma from './prisma';
 import { nextCookies } from 'better-auth/next-js';
 
+export const MIN_PASSWORD_LENGTH = 8;
+export const MAX_PASSWORD_LENGTH = 128;
+export const PASSWORD_TOKEN_EXPIRES_IN = 60 * 60 * 24;
+
 export const auth = betterAuth({
     database: prismaAdapter(prisma, {
         provider: 'postgresql',
@@ -10,6 +14,8 @@ export const auth = betterAuth({
     emailAndPassword: {
         enabled: true,
         requireEmailVerification: true,
+        maxPasswordLength: MAX_PASSWORD_LENGTH,
+        minPasswordLength: MIN_PASSWORD_LENGTH,
         sendResetPassword: async ({ user, url }) => {
             const emailData = {
                 service_id: process.env.EMAILJS_SERVICE_ID ?? '',
@@ -26,6 +32,7 @@ export const auth = betterAuth({
                 },
             });
         },
+        resetPasswordTokenExpiresIn: PASSWORD_TOKEN_EXPIRES_IN,
     },
     emailVerification: {
         sendOnSignUp: true,
