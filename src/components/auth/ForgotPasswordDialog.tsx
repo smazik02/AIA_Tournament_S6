@@ -78,7 +78,7 @@ function ForgotPasswordDialog({ isOpen, handleClose }: ForgotPasswordDialogProps
                     error={error}
                     helperText={errorMessage}
                     color={error ? 'error' : 'primary'}
-                ></TextField>
+                />
                 {success && <Alert severity="success">Password reset email has been sent!</Alert>}
             </DialogContent>
             <DialogActions sx={{ pb: 3, px: 3 }}>

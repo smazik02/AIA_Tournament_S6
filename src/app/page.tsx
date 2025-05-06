@@ -12,7 +12,14 @@ export default function Home() {
     return (
         <Container sx={{ display: 'flex', padding: 2 }}>
             <Stack>
-                <Button variant="contained">Hello world</Button>
+                <Button
+                    variant="contained"
+                    onClick={() => {
+                        router.push('/test');
+                    }}
+                >
+                    Hello world
+                </Button>
                 {session && (
                     <Button
                         variant="contained"
