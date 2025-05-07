@@ -164,10 +164,10 @@ function SignUpForm() {
                 <Button
                     fullWidth
                     variant="outlined"
-                    onClick={() => alert('Sign up with google')}
+                    onClick={async () => await authClient.signIn.social({ provider: 'google' })}
                     startIcon={<GoogleIcon />}
                 >
-                    Sign up with Google
+                    Sign in with Google
                 </Button>
                 <Typography sx={{ textAlign: 'center' }}>
                     Already have an account?{' '}

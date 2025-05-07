@@ -163,7 +163,7 @@ function SignInForm() {
                     <Button
                         fullWidth
                         variant="outlined"
-                        onClick={() => alert('Sign up with google')}
+                        onClick={async () => await authClient.signIn.social({ provider: 'google' })}
                         startIcon={<GoogleIcon />}
                     >
                         Sign in with Google
