@@ -92,7 +92,7 @@ CREATE TABLE "tournaments" (
     "location" TEXT NOT NULL,
     "maxParticipants" INTEGER NOT NULL,
     "applicationDeadline" TIMESTAMP(3) NOT NULL,
-    "creationDate" TIMESTAMP(3) NOT NULL,
+    "creationDate" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "organizerId" TEXT NOT NULL,
 
     CONSTRAINT "tournaments_pkey" PRIMARY KEY ("id")

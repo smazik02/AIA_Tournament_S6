@@ -84,7 +84,7 @@ model Tournament {
   location            String
   maxParticipants     Int
   applicationDeadline DateTime
-  creationDate        DateTime
+  creationDate        DateTime                 @default(now())
   sponsors            Sponsor[]
   organizerId         String
   organizer           User                     @relation(fields: [organizerId], references: [id])
