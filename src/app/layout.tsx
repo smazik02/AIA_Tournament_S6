@@ -5,7 +5,7 @@ import { CssBaseline, ThemeProvider } from '@mui/material';
 import theme from '@/theme';
 import styles from './root.module.css';
 
-export interface RootLayoutProps {
+interface RootLayoutProps {
     children: ReactNode;
 }
 
