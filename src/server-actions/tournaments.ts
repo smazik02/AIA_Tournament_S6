@@ -10,10 +10,12 @@ const createTournamentSchema = z
     .object({
         name: z.string({ required_error: 'Name is required' }).min(1, 'Name cannot be empty'),
         discipline: z.string({ required_error: 'Discipline is required' }).min(1, 'Discipline cannot be empty'),
-        time: z.coerce.date({
-            required_error: 'Tournament date is required',
-            invalid_type_error: 'Invalid date format for tournament time',
-        }),
+        time: z.coerce
+            .date({
+                required_error: 'Tournament date is required',
+                invalid_type_error: 'Invalid date format for tournament time',
+            })
+            .min(new Date(), 'You cannot set deadlines in the past'),
         location: z.string({ required_error: 'Location is required' }).min(1, 'Location cannot be empty'),
         maxParticipants: z.coerce
             .number({ required_error: 'Maximum participants is required' })
@@ -90,7 +92,6 @@ export async function createTournament(
     };
 
     const validationResult = createTournamentSchema.safeParse(rawInputs);
-
     if (!validationResult.success) {
         const flattenedErrors = validationResult.error.flatten();
         console.log('Validation failed:', flattenedErrors.fieldErrors);
@@ -102,21 +103,8 @@ export async function createTournament(
         };
     }
 
-    console.log('Tournament data validated and ready for DB:', validationResult.data);
-
     const organizerId = session.user.id;
-    try {
-        await prisma.tournament.create({ data: { ...validationResult.data, organizerId } });
-        return {
-            success: true,
-            message: 'Tournament created successfully!',
-        };
-    } catch (error: unknown) {
-        console.error('Error creating tournament:', error);
-        return {
-            success: false,
-            message: 'An unexpected error occurred while creating the tournament. Please try again.',
-            inputs: rawInputs,
-        };
-    }
+    await prisma.tournament.create({ data: { ...validationResult.data, organizerId } });
+
+    redirect('/');
 }

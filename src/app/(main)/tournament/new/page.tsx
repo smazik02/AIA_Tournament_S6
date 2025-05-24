@@ -110,7 +110,6 @@ function NewTournamentPage() {
                             </Button>
 
                             {state.message && !state.success && <Alert severity="error">{state.message}</Alert>}
-                            {state.message && state.success && <Alert severity="success">{state.message}</Alert>}
                         </Stack>
                     </FormControl>
                 </Form>
