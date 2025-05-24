@@ -20,13 +20,14 @@ export async function getTournament(id: string): Promise<Tournament | null> {
     return prisma.tournament.findUnique({ where: { id } });
 }
 
-export async function createTournament(tournament: Prisma.TournamentCreateInput): Promise<Tournament> {
+export async function createTournament(tournament: Prisma.TournamentUncheckedCreateInput): Promise<Tournament> {
     const session = await auth.api.getSession({ headers: await headers() });
     if (!session) {
         redirect('/auth/sign-in');
     }
 
-    return prisma.tournament.create({ data: tournament });
+    const organizerId = session.user.id;
+    return prisma.tournament.create({ data: { ...tournament, organizerId } });
 }
 
 export async function updateTournament(id: string, updatedFields: Prisma.TournamentUpdateInput): Promise<Tournament> {

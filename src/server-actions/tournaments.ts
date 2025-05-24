@@ -1,10 +1,8 @@
 'use server';
 
-import { auth } from '@/lib/auth';
-import { headers } from 'next/headers';
 import { redirect } from 'next/navigation';
 import { z } from 'zod';
-import prisma from '@/lib/prisma';
+import { createTournament } from '@/data-access/tournaments';
 
 const createTournamentSchema = z
     .object({
@@ -73,15 +71,10 @@ export interface CreateTournamentState {
     };
 }
 
-export async function createTournament(
+export async function createTournamentAction(
     _: CreateTournamentState | null,
     formData: FormData,
 ): Promise<CreateTournamentState> {
-    const session = await auth.api.getSession({ headers: await headers() });
-    if (!session) {
-        redirect('/auth/sign-in');
-    }
-
     const rawInputs: TournamentFormInputs = {
         name: (formData.get('name') as string | null) ?? undefined,
         discipline: (formData.get('discipline') as string | null) ?? undefined,
@@ -103,8 +96,6 @@ export async function createTournament(
         };
     }
 
-    const organizerId = session.user.id;
-    await prisma.tournament.create({ data: { ...validationResult.data, organizerId } });
-
+    await createTournament({ ...validationResult.data, organizerId: '' });
     redirect('/');
 }

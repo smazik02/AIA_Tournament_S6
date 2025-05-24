@@ -2,7 +2,7 @@
 
 import { Alert, Box, Button, FormControl, Stack, TextField } from '@mui/material';
 import Form from 'next/form';
-import { createTournament, CreateTournamentState } from '@/server-actions/tournaments';
+import { createTournamentAction, CreateTournamentState } from '@/server-actions/tournaments';
 import { useActionState, useState } from 'react';
 import { DateTimePicker, LocalizationProvider } from '@mui/x-date-pickers';
 import dayjs from 'dayjs';
@@ -14,7 +14,7 @@ const initialState: CreateTournamentState = {
 };
 
 function NewTournamentPage() {
-    const [state, formAction, isPending] = useActionState(createTournament, initialState);
+    const [state, formAction, isPending] = useActionState(createTournamentAction, initialState);
     const [tournamentTimeError, setTournamentTimeError] = useState<string | null>('');
     const [applicationDeadlineError, setApplicationDeadlineError] = useState<string | null>('');
 
