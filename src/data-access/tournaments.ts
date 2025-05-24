@@ -16,6 +16,10 @@ export async function getAllTournamentsPaged({ skip, take }: PaginationInfo): Pr
     return prisma.tournament.findMany({ skip, take });
 }
 
+export async function getTournamentsCount(): Promise<number> {
+    return prisma.tournament.count();
+}
+
 export async function getTournament(id: string): Promise<Tournament | null> {
     return prisma.tournament.findUnique({ where: { id } });
 }
