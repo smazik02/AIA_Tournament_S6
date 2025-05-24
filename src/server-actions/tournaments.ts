@@ -8,9 +8,7 @@ import { z } from 'zod';
 const createSchema = z.object({
     name: z.string({ required_error: 'Name missing' }),
     discipline: z.string({ required_error: 'Discipline missing' }),
-    time: z
-        .date({ required_error: 'Date missing', invalid_type_error: 'Invalid date' })
-        .min(new Date(), 'You cannot organize events in the past'),
+    time: z.date({ required_error: 'Date missing', invalid_type_error: 'Invalid date' }),
     location: z.string({ required_error: 'Location missing' }),
     maxParticipants: z
         .number({ required_error: 'Max participants missing' })
@@ -56,9 +54,10 @@ export async function createTournament(
             maxParticipants: formData.get('maxParticipants'),
             applicationDeadline: formData.get('applicationDeadline'),
         };
+        console.log(`Date: ${receivedForm.time}`);
         const validateFields = createSchema.safeParse(receivedForm);
         if (!validateFields.success) {
-            console.log('Validation failed');
+            console.log('Validation failed ' + validateFields.error.flatten().fieldErrors.time?.[0]);
             return {
                 success: false,
                 message: 'There were errors during form validation!',
