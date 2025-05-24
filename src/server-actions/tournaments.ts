@@ -4,35 +4,70 @@ import { auth } from '@/lib/auth';
 import { headers } from 'next/headers';
 import { redirect } from 'next/navigation';
 import { z } from 'zod';
+import prisma from '@/lib/prisma';
 
-const createSchema = z.object({
-    name: z.string({ required_error: 'Name missing' }),
-    discipline: z.string({ required_error: 'Discipline missing' }),
-    time: z.date({ required_error: 'Date missing', invalid_type_error: 'Invalid date' }),
-    location: z.string({ required_error: 'Location missing' }),
-    maxParticipants: z
-        .number({ required_error: 'Max participants missing' })
-        .min(2, 'Participant limit cannot be below 2'),
-    applicationDeadline: z
-        .date({ required_error: 'Date missing', invalid_type_error: 'Invalid date' })
-        .min(new Date(), 'You cannot set deadlines in the past'),
-});
+const createTournamentSchema = z
+    .object({
+        name: z.string({ required_error: 'Name is required' }).min(1, 'Name cannot be empty'),
+        discipline: z.string({ required_error: 'Discipline is required' }).min(1, 'Discipline cannot be empty'),
+        time: z.coerce.date({
+            required_error: 'Tournament date is required',
+            invalid_type_error: 'Invalid date format for tournament time',
+        }),
+        location: z.string({ required_error: 'Location is required' }).min(1, 'Location cannot be empty'),
+        maxParticipants: z.coerce
+            .number({ required_error: 'Maximum participants is required' })
+            .int('Maximum participants must be an integer')
+            .min(2, 'Participant limit cannot be below 2'),
+        applicationDeadline: z.coerce
+            .date({
+                required_error: 'Application deadline is required',
+                invalid_type_error: 'Invalid date format for application deadline',
+            })
+            .min(new Date(), 'You cannot set deadlines in the past'),
+    })
+    .refine(
+        (data) => {
+            const today = new Date();
+            today.setHours(0, 0, 0, 0);
+            return data.applicationDeadline >= today;
+        },
+        {
+            message: 'Application deadline cannot be in the past',
+            path: ['applicationDeadline'],
+        },
+    )
+    .refine(
+        (data) => {
+            return data.time > data.applicationDeadline;
+        },
+        {
+            message: 'Tournament time must be after the application deadline',
+            path: ['time'],
+        },
+    );
 
-interface TournamentFormData {
+interface TournamentFormInputs {
     name?: string;
     discipline?: string;
-    time?: Date | string;
+    time?: string;
     location?: string;
-    maxParticipants?: number;
-    applicationDeadline?: Date | string;
+    maxParticipants?: string;
+    applicationDeadline?: string;
 }
 
 export interface CreateTournamentState {
     success: boolean;
     message: string;
-    inputs?: TournamentFormData;
+    inputs?: TournamentFormInputs;
     errors?: {
-        [K in keyof TournamentFormData]?: string[];
+        name?: string[];
+        discipline?: string[];
+        time?: string[];
+        location?: string[];
+        maxParticipants?: string[];
+        applicationDeadline?: string[];
+        _form?: string[];
     };
 }
 
@@ -45,43 +80,43 @@ export async function createTournament(
         redirect('/auth/sign-in');
     }
 
-    try {
-        const receivedForm = {
-            name: formData.get('name'),
-            discipline: formData.get('discipline'),
-            time: formData.get('time'),
-            location: formData.get('location'),
-            maxParticipants: formData.get('maxParticipants'),
-            applicationDeadline: formData.get('applicationDeadline'),
-        };
-        console.log(`Date: ${receivedForm.time}`);
-        const validateFields = createSchema.safeParse(receivedForm);
-        if (!validateFields.success) {
-            console.log('Validation failed ' + validateFields.error.flatten().fieldErrors.time?.[0]);
-            return {
-                success: false,
-                message: 'There were errors during form validation!',
-                inputs: {
-                    name: (receivedForm.name ?? '') as string,
-                    discipline: (receivedForm.discipline ?? '') as string,
-                    time: (receivedForm.time ?? '') as string,
-                    location: (receivedForm.location ?? '') as string,
-                    maxParticipants: (receivedForm.maxParticipants ?? 0) as number,
-                },
-                errors: validateFields.error.flatten().fieldErrors,
-            };
-        }
+    const rawInputs: TournamentFormInputs = {
+        name: (formData.get('name') as string | null) ?? undefined,
+        discipline: (formData.get('discipline') as string | null) ?? undefined,
+        time: (formData.get('time') as string | null) ?? undefined,
+        location: (formData.get('location') as string | null) ?? undefined,
+        maxParticipants: (formData.get('maxParticipants') as string | null) ?? undefined,
+        applicationDeadline: (formData.get('applicationDeadline') as string | null) ?? undefined,
+    };
 
-        // const organizerId = session.user.id;
-        return {
-            success: true,
-            message: '',
-        };
-        // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    } catch (_: unknown) {
+    const validationResult = createTournamentSchema.safeParse(rawInputs);
+
+    if (!validationResult.success) {
+        const flattenedErrors = validationResult.error.flatten();
+        console.log('Validation failed:', flattenedErrors.fieldErrors);
         return {
             success: false,
-            message: 'Unknown error occured!',
+            message: 'Form validation failed. Please check your inputs.',
+            inputs: rawInputs,
+            errors: flattenedErrors.fieldErrors,
+        };
+    }
+
+    console.log('Tournament data validated and ready for DB:', validationResult.data);
+
+    const organizerId = session.user.id;
+    try {
+        await prisma.tournament.create({ data: { ...validationResult.data, organizerId } });
+        return {
+            success: true,
+            message: 'Tournament created successfully!',
+        };
+    } catch (error: unknown) {
+        console.error('Error creating tournament:', error);
+        return {
+            success: false,
+            message: 'An unexpected error occurred while creating the tournament. Please try again.',
+            inputs: rawInputs,
         };
     }
 }
