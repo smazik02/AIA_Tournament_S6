@@ -1,7 +1,8 @@
 import { getAllTournamentsPaged, getTournamentsCount } from '@/data-access/tournaments';
-import { Box, Card, CardContent, Container, Grid, Typography } from '@mui/material';
+import { Box, Card, CardActionArea, CardContent, Container, Grid, Typography } from '@mui/material';
 import CreateTournamentButton from '@/components/main/CreateTournamentButton';
 import TournamentPagination from '@/components/main/TournamentPagination';
+import Link from 'next/link';
 
 const ITEMS_PER_PAGE = 10;
 
@@ -11,8 +12,6 @@ interface HomePageProps {
 
 async function Home({ searchParams }: HomePageProps) {
     const { takeQuery = ITEMS_PER_PAGE, skipQuery = 0 } = await searchParams;
-    // const takeQuery = searchParams?.take ? parseInt(searchParams.take, 10) : ITEMS_PER_PAGE;
-    // const skipQuery = searchParams?.skip ? parseInt(searchParams.skip, 10) : 0;
 
     const take = isNaN(+takeQuery) || +takeQuery <= 0 ? ITEMS_PER_PAGE : +takeQuery;
     const skip = isNaN(+skipQuery) || +skipQuery < 0 ? 0 : +skipQuery;
@@ -41,27 +40,33 @@ async function Home({ searchParams }: HomePageProps) {
                     {tournaments.map((tournament) => (
                         <Grid columns={{ xs: 12, sm: 6, md: 4 }} key={tournament.id}>
                             <Card sx={{ height: '100%', display: 'flex', flexDirection: 'column' }}>
-                                <CardContent sx={{ flexGrow: 1 }}>
-                                    <Typography variant="h5" component="div" gutterBottom>
-                                        {tournament.name}
-                                    </Typography>
-                                    <Typography sx={{ mb: 1 }} color="text.secondary">
-                                        Discipline: {tournament.discipline}
-                                    </Typography>
-                                    <Typography variant="body2" color="text.secondary">
-                                        Location: {tournament.location}
-                                    </Typography>
-                                    <Typography variant="body2" color="text.secondary">
-                                        Date: {new Date(tournament.time).toLocaleDateString()}
-                                    </Typography>
-                                    <Typography variant="body2" color="text.secondary">
-                                        Max Participants: {tournament.maxParticipants}
-                                    </Typography>
-                                    <Typography variant="body2" color="text.secondary">
-                                        Application Deadline:{' '}
-                                        {new Date(tournament.applicationDeadline).toLocaleDateString()}
-                                    </Typography>
-                                </CardContent>
+                                <CardActionArea
+                                    component={Link}
+                                    href={`/tournament/${tournament.id}`}
+                                    sx={{ flexGrow: 1, display: 'flex', flexDirection: 'column' }}
+                                >
+                                    <CardContent sx={{ flexGrow: 1, width: '100%' }}>
+                                        <Typography variant="h5" component="div" gutterBottom>
+                                            {tournament.name}
+                                        </Typography>
+                                        <Typography sx={{ mb: 1 }} color="text.secondary">
+                                            Discipline: {tournament.discipline}
+                                        </Typography>
+                                        <Typography variant="body2" color="text.secondary">
+                                            Location: {tournament.location}
+                                        </Typography>
+                                        <Typography variant="body2" color="text.secondary">
+                                            Date: {new Date(tournament.time).toLocaleDateString()}
+                                        </Typography>
+                                        <Typography variant="body2" color="text.secondary">
+                                            Max Participants: {tournament.maxParticipants}
+                                        </Typography>
+                                        <Typography variant="body2" color="text.secondary">
+                                            Application Deadline:{' '}
+                                            {new Date(tournament.applicationDeadline).toLocaleDateString()}
+                                        </Typography>
+                                    </CardContent>
+                                </CardActionArea>
                             </Card>
                         </Grid>
                     ))}

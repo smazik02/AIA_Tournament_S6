@@ -12,6 +12,8 @@ interface PaginationInfo {
     take: number;
 }
 
+type TournamentFull = Prisma.TournamentGetPayload<{ include: { participants: true; organizer: true; sponsors: true } }>;
+
 export async function getAllTournamentsPaged({ skip, take }: PaginationInfo): Promise<Tournament[]> {
     return prisma.tournament.findMany({ skip, take });
 }
@@ -20,14 +22,17 @@ export async function getTournamentsCount(): Promise<number> {
     return prisma.tournament.count();
 }
 
-export async function getTournament(id: string): Promise<Tournament | null> {
-    return prisma.tournament.findUnique({ where: { id } });
+export async function getTournament(id: string): Promise<TournamentFull | null> {
+    return prisma.tournament.findUnique({
+        where: { id },
+        include: { participants: true, organizer: true, sponsors: true },
+    });
 }
 
 export async function createTournament(tournament: Prisma.TournamentUncheckedCreateInput): Promise<Tournament> {
     const session = await auth.api.getSession({ headers: await headers() });
     if (!session) {
-        redirect('/auth/sign-in');
+        redirect(`/auth/sign-in?callback=${encodeURI('/tournaments/create')}`);
     }
 
     const organizerId = session.user.id;
@@ -37,7 +42,7 @@ export async function createTournament(tournament: Prisma.TournamentUncheckedCre
 export async function updateTournament(id: string, updatedFields: Prisma.TournamentUpdateInput): Promise<Tournament> {
     const session = await auth.api.getSession({ headers: await headers() });
     if (!session) {
-        redirect('/auth/sign-in');
+        redirect(`/auth/sign-in`);
     }
 
     const tournament = await prisma.tournament.findUnique({ where: { id } });

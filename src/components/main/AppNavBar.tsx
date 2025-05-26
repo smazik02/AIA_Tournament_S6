@@ -5,12 +5,12 @@ import NextLink from 'next/link';
 import { authClient } from '@/lib/auth-client';
 import { AccountCircle, AccountCircleOutlined } from '@mui/icons-material';
 import { MouseEvent, useState } from 'react';
-import { useRouter } from 'next/navigation';
+import { usePathname, useRouter } from 'next/navigation';
 
 function AppNavBar() {
     const { data: session } = authClient.useSession();
-
     const router = useRouter();
+    const currentPath = usePathname();
 
     const [anchorEl, setAnchorEl] = useState<HTMLElement | null>(null);
 
@@ -20,6 +20,21 @@ function AppNavBar() {
 
     const handleClose = () => {
         setAnchorEl(null);
+    };
+
+    const handleLogin = () => {
+        const callbackUrl = currentPath === '/' ? '' : currentPath.substring(1);
+        const signInUrl = `/auth/sign-in${callbackUrl ? `?callbackUrl=${encodeURIComponent(callbackUrl)}` : ''}`;
+        router.push(signInUrl);
+    };
+
+    const handleLogout = async () => {
+        handleClose();
+        await authClient.signOut({
+            fetchOptions: {
+                onSuccess: () => router.push('/'),
+            },
+        });
     };
 
     return (
@@ -49,21 +64,11 @@ function AppNavBar() {
                                 <MenuItem key={1} onClick={handleClose}>
                                     Profile info
                                 </MenuItem>,
-                                <MenuItem
-                                    key={2}
-                                    onClick={async () => {
-                                        handleClose();
-                                        await authClient.signOut({
-                                            fetchOptions: {
-                                                onSuccess: () => router.push('/auth/sign-in'),
-                                            },
-                                        });
-                                    }}
-                                >
+                                <MenuItem key={2} onClick={handleLogout}>
                                     Logout
                                 </MenuItem>,
                             ]}
-                            {!session && <MenuItem onClick={() => router.push('/auth/sign-in')}>Login</MenuItem>}
+                            {!session && <MenuItem onClick={handleLogin}>Login</MenuItem>}
                         </Menu>
                     </div>
                 </Toolbar>
