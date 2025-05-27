@@ -3,6 +3,7 @@
 import { redirect } from 'next/navigation';
 import { z } from 'zod';
 import { createTournament } from '@/data-access/tournaments';
+import { revalidatePath } from 'next/cache';
 
 const createTournamentSchema = z
     .object({
@@ -97,5 +98,6 @@ export async function createTournamentAction(
     }
 
     await createTournament({ ...validationResult.data, organizerId: '' });
+    revalidatePath('/');
     redirect('/');
 }
