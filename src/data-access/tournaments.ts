@@ -5,14 +5,16 @@ import { auth } from '@/lib/auth';
 import { headers } from 'next/headers';
 import { redirect } from 'next/navigation';
 import { Prisma, Tournament } from '@prisma/client';
-import { ForbiddenError, NotFoundError } from '@/errors/errors';
+import { ForbiddenError, NotFoundError, ValidationError } from '@/errors/errors';
 
 interface PaginationInfo {
     skip: number;
     take: number;
 }
 
-type TournamentFull = Prisma.TournamentGetPayload<{ include: { participants: true; organizer: true; sponsors: true } }>;
+export type TournamentFull = Prisma.TournamentGetPayload<{
+    include: { participants: true; organizer: true; sponsors: true };
+}>;
 
 export async function getAllTournamentsPaged({ skip, take }: PaginationInfo): Promise<Tournament[]> {
     return prisma.tournament.findMany({ skip, take });
@@ -42,17 +44,44 @@ export async function createTournament(tournament: Prisma.TournamentUncheckedCre
 export async function updateTournament(id: string, updatedFields: Prisma.TournamentUpdateInput): Promise<Tournament> {
     const session = await auth.api.getSession({ headers: await headers() });
     if (!session) {
-        redirect(`/auth/sign-in`);
+        redirect(`/auth/sign-in?callback=${encodeURI('/tournaments/update')}`);
     }
 
-    const tournament = await prisma.tournament.findUnique({ where: { id } });
-    if (!tournament) {
+    const tournament = await prisma.tournament.findUnique({ where: { id }, include: { participants: true } });
+    if (tournament === null) {
         throw new NotFoundError(`Tournament with id ${id} doesn't exist`);
     }
 
     const userId = session.user.id;
     if (tournament.organizerId !== userId) {
-        throw new ForbiddenError('User cannot edit this tournament');
+        throw new ForbiddenError('User cannot update this tournament');
+    }
+
+    console.log(`Tournament has ${tournament.participants.length} participants`);
+    if (tournament.participants.length > ((updatedFields.maxParticipants as number | undefined) ?? 0)) {
+        throw new ValidationError('Tournament has more participants than new max limit.');
+    }
+
+    if (updatedFields.time !== undefined && updatedFields.applicationDeadline !== undefined) {
+        const newTournamentTime = new Date(updatedFields.time.toString());
+        const newApplicationDeadline = new Date(updatedFields.applicationDeadline.toString());
+        if (newTournamentTime < newApplicationDeadline) {
+            throw new ValidationError("Application deadline has to be before tournament's time.");
+        }
+    }
+
+    if (updatedFields.time !== undefined) {
+        const newTournamentTime = new Date(updatedFields.time.toString());
+        if (newTournamentTime < tournament.applicationDeadline) {
+            throw new ValidationError("Application deadline has to be before tournament's time.");
+        }
+    }
+
+    if (updatedFields.applicationDeadline !== undefined) {
+        const newApplicationDeadline = new Date(updatedFields.applicationDeadline.toString());
+        if (newApplicationDeadline > tournament.time) {
+            throw new ValidationError("Application deadline has to be before tournament's time.");
+        }
     }
 
     return prisma.tournament.update({ where: { id }, data: updatedFields });

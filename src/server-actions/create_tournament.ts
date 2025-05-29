@@ -97,7 +97,7 @@ export async function createTournamentAction(
         };
     }
 
-    await createTournament({ ...validationResult.data, organizerId: '' });
-    revalidatePath('/');
-    redirect('/');
+    const newTournament = await createTournament({ ...validationResult.data, organizerId: '' });
+    revalidatePath(`/`);
+    redirect(`/tournaments/${newTournament.id}`);
 }

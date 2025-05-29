@@ -1,22 +1,37 @@
 'use client';
 
+import { TournamentFull } from '@/data-access/tournaments';
+import { use, useActionState, useState } from 'react';
+import { updateTournamentAction, UpdateTournamentState } from '@/server-actions/edit_tournament';
+import { DateTimePicker, LocalizationProvider } from '@mui/x-date-pickers';
+import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import { Alert, Box, Button, FormControl, Stack, TextField } from '@mui/material';
 import Form from 'next/form';
-import { createTournamentAction, CreateTournamentState } from '@/server-actions/create_tournament';
-import { useActionState, useState } from 'react';
-import { DateTimePicker, LocalizationProvider } from '@mui/x-date-pickers';
 import dayjs from 'dayjs';
-import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
+import { useRouter } from 'next/navigation';
 
-const initialState: CreateTournamentState = {
+interface UpdateTournamentFormProps {
+    tournament: Promise<TournamentFull | null>;
+}
+
+const initialState: UpdateTournamentState = {
     success: false,
     message: '',
 };
 
-function NewTournamentPage() {
-    const [state, formAction, isPending] = useActionState(createTournamentAction, initialState);
+function UpdateTournamentForm({ tournament }: UpdateTournamentFormProps) {
+    const [state, formAction, isPending] = useActionState(updateTournamentAction, initialState);
     const [tournamentTimeError, setTournamentTimeError] = useState<string | null>('');
     const [applicationDeadlineError, setApplicationDeadlineError] = useState<string | null>('');
+
+    const router = useRouter();
+
+    const tournamentToEdit = use(tournament);
+
+    if (tournamentToEdit === null) {
+        router.push('/');
+        return;
+    }
 
     return (
         <LocalizationProvider dateAdapter={AdapterDayjs}>
@@ -24,6 +39,7 @@ function NewTournamentPage() {
                 <Form action={formAction}>
                     <FormControl>
                         <Stack sx={{ justifyContent: 'center', gap: 2 }}>
+                            <input hidden name="id" defaultValue={tournamentToEdit.id} type="hidden" />
                             <TextField
                                 name="name"
                                 label="Name"
@@ -31,27 +47,14 @@ function NewTournamentPage() {
                                 required
                                 id="name"
                                 type="text"
-                                defaultValue={state?.inputs?.name}
+                                defaultValue={state?.inputs?.name ?? tournamentToEdit.name}
                                 error={state?.errors?.name !== undefined}
                                 helperText={state?.errors?.name?.[0]}
                                 color={state?.errors?.name ? 'error' : 'primary'}
                             />
-                            <TextField
-                                name="discipline"
-                                label="Discipline"
-                                fullWidth
-                                required
-                                id="discipline"
-                                type="text"
-                                defaultValue={state?.inputs?.discipline}
-                                error={state?.errors?.discipline !== undefined}
-                                helperText={state?.errors?.discipline?.[0]}
-                                color={state?.errors?.discipline ? 'error' : 'primary'}
-                            />
                             <DateTimePicker
                                 name="time"
                                 label="Time"
-                                disablePast
                                 format="L HH:mm"
                                 ampm={false}
                                 slotProps={{
@@ -59,9 +62,8 @@ function NewTournamentPage() {
                                         helperText: tournamentTimeError,
                                     },
                                 }}
-                                defaultValue={dayjs(
-                                    state?.inputs?.time ?? new Date().setHours(new Date().getHours() + 1, 0, 0, 0),
-                                )}
+                                minDateTime={dayjs(tournamentToEdit.time).set('second', 0)}
+                                defaultValue={dayjs(state?.inputs?.time ?? tournamentToEdit.time)}
                                 onError={(err) => setTournamentTimeError(err)}
                             />
                             <TextField
@@ -71,7 +73,7 @@ function NewTournamentPage() {
                                 required
                                 id="location"
                                 type="text"
-                                defaultValue={state?.inputs?.location}
+                                defaultValue={state?.inputs?.location ?? tournamentToEdit.location}
                                 error={state?.errors?.location !== undefined}
                                 helperText={state?.errors?.location?.[0]}
                                 color={state?.errors?.location ? 'error' : 'primary'}
@@ -83,14 +85,13 @@ function NewTournamentPage() {
                                 required
                                 id="max_participants"
                                 type="number"
-                                defaultValue={state?.inputs?.maxParticipants}
+                                defaultValue={state?.inputs?.maxParticipants ?? tournamentToEdit.maxParticipants}
                                 error={state?.errors?.maxParticipants !== undefined}
                                 helperText={state?.errors?.maxParticipants?.[0]}
                             />
                             <DateTimePicker
                                 name="applicationDeadline"
                                 label="Application deadline"
-                                disablePast
                                 format="L HH:mm"
                                 ampm={false}
                                 slotProps={{
@@ -98,15 +99,16 @@ function NewTournamentPage() {
                                         helperText: applicationDeadlineError,
                                     },
                                 }}
+                                minDateTime={dayjs(tournamentToEdit.applicationDeadline).set('second', 0)}
+                                maxDateTime={dayjs(tournamentToEdit.time)}
                                 defaultValue={dayjs(
-                                    state?.inputs?.applicationDeadline ??
-                                        new Date().setHours(new Date().getHours() + 1, 0, 0, 0),
+                                    state?.inputs?.applicationDeadline ?? tournamentToEdit.applicationDeadline,
                                 )}
                                 onError={(err) => setApplicationDeadlineError(err)}
                             />
 
                             <Button variant="contained" type="submit" disabled={isPending}>
-                                {isPending ? 'Creating...' : 'Create'}
+                                {isPending ? 'Updating...' : 'Update'}
                             </Button>
 
                             {state.message && !state.success && <Alert severity="error">{state.message}</Alert>}
@@ -118,4 +120,4 @@ function NewTournamentPage() {
     );
 }
 
-export default NewTournamentPage;
+export default UpdateTournamentForm;

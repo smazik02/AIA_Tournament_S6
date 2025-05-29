@@ -212,7 +212,7 @@ async function TournamentPage({ params }: TournamentPageProps) {
                             color="secondary"
                             startIcon={<Edit />}
                             component={Link}
-                            href={`/tournament/${tournament.id}/edit`}
+                            href={`/tournament/${tournament.id}/update`}
                             sx={{ flexGrow: { sm: 1 } }}
                         >
                             Edit Tournament

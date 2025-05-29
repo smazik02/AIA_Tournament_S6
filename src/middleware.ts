@@ -13,5 +13,5 @@ export function middleware(request: NextRequest) {
 }
 
 export const config = {
-    matcher: ['/tournament/edit', '/tournament/new'],
+    matcher: ['/tournament/update', '/tournament/new'],
 };
