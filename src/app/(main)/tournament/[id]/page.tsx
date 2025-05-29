@@ -45,7 +45,11 @@ async function TournamentPage({ params }: TournamentPageProps) {
         day: 'numeric',
     });
 
-    const canEdit = session?.user !== undefined && tournament.organizerId === session.user.id;
+    const isOwner = session?.user !== undefined && tournament.organizerId === session.user.id;
+    const canParticipate =
+        session?.user !== undefined &&
+        tournament.organizerId !== session.user.id &&
+        tournament.participants.find((participant) => participant.id === session.user.id) !== undefined;
     const rankedPlayersCount = tournament.participants.length;
 
     return (
@@ -190,7 +194,7 @@ async function TournamentPage({ params }: TournamentPageProps) {
                         justifyContent: 'center',
                     }}
                 >
-                    {!canEdit && (
+                    {canParticipate && (
                         <Button
                             variant="contained"
                             color="primary"
@@ -202,13 +206,13 @@ async function TournamentPage({ params }: TournamentPageProps) {
                             Apply to Participate
                         </Button>
                     )}
-                    {canEdit && (
+                    {isOwner && (
                         <Button
                             variant="outlined"
                             color="secondary"
                             startIcon={<Edit />}
                             component={Link}
-                            href={`/tournament/${tournament.id}/form`}
+                            href={`/tournament/${tournament.id}/edit`}
                             sx={{ flexGrow: { sm: 1 } }}
                         >
                             Edit Tournament
