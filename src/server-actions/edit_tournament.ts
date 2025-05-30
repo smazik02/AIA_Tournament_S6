@@ -4,7 +4,7 @@ import { z } from 'zod';
 import { updateTournament } from '@/data-access/tournaments';
 import { revalidatePath } from 'next/cache';
 import { redirect } from 'next/navigation';
-import { ForbiddenError, NotFoundError, ValidationError } from '@/errors/errors';
+import { ForbiddenError, NotFoundError, UnauthorizedError, ValidationError } from '@/errors/errors';
 
 const updateTournamentSchema = z
     .object({
@@ -92,6 +92,9 @@ export async function updateTournamentAction(
         console.error(error);
         const toReturn = { success: false, inputs: rawInputs };
 
+        if (error instanceof UnauthorizedError) {
+            redirect(`/auth/sign-in?callback=${encodeURI('/tournaments/update')}`);
+        }
         if (error instanceof NotFoundError) {
             return { ...toReturn, message: 'Tournament does not seem to exist.' };
         }

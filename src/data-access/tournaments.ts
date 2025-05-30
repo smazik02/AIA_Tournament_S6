@@ -5,7 +5,7 @@ import { auth } from '@/lib/auth';
 import { headers } from 'next/headers';
 import { redirect } from 'next/navigation';
 import { Prisma, Tournament } from '@prisma/client';
-import { ConflictError, ForbiddenError, NotFoundError, ValidationError } from '@/errors/errors';
+import { ConflictError, ForbiddenError, NotFoundError, UnauthorizedError, ValidationError } from '@/errors/errors';
 
 interface PaginationInfo {
     skip: number;
@@ -34,7 +34,7 @@ export async function getTournament(id: string): Promise<TournamentFull | null> 
 export async function createTournament(tournament: Prisma.TournamentUncheckedCreateInput): Promise<Tournament> {
     const session = await auth.api.getSession({ headers: await headers() });
     if (!session) {
-        redirect(`/auth/sign-in?callback=${encodeURI('/tournament/create')}`);
+        throw new UnauthorizedError('User is not logged in.');
     }
 
     const organizerId = session.user.id;
@@ -44,7 +44,7 @@ export async function createTournament(tournament: Prisma.TournamentUncheckedCre
 export async function updateTournament(id: string, updatedFields: Prisma.TournamentUpdateInput): Promise<Tournament> {
     const session = await auth.api.getSession({ headers: await headers() });
     if (!session) {
-        redirect(`/auth/sign-in?callback=${encodeURI('/tournaments/update')}`);
+        throw new UnauthorizedError('User is not logged in.');
     }
 
     const tournament = await prisma.tournament.findUnique({ where: { id }, include: { participants: true } });

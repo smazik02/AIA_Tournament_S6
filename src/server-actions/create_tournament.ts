@@ -4,6 +4,7 @@ import { redirect } from 'next/navigation';
 import { z } from 'zod';
 import { createTournament } from '@/data-access/tournaments';
 import { revalidatePath } from 'next/cache';
+import { UnauthorizedError } from '@/errors/errors';
 
 const createTournamentSchema = z
     .object({
@@ -97,7 +98,19 @@ export async function createTournamentAction(
         };
     }
 
-    const newTournament = await createTournament({ ...validationResult.data, organizerId: '' });
+    let newTournament;
+    try {
+        newTournament = await createTournament({ ...validationResult.data, organizerId: '' });
+    } catch (error: unknown) {
+        console.error(error);
+        if (error instanceof UnauthorizedError) {
+            redirect(`/auth/sign-in?callback=${encodeURI('/tournament/create')}`);
+        }
+        return {
+            success: false,
+            message: 'Something went wrong. Please try again later.',
+        };
+    }
     revalidatePath(`/`);
-    redirect(`/tournament/${newTournament.id}`);
+    redirect(`/tournament/${newTournament?.id}`);
 }
