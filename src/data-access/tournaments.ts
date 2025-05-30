@@ -5,7 +5,7 @@ import { auth } from '@/lib/auth';
 import { headers } from 'next/headers';
 import { redirect } from 'next/navigation';
 import { Prisma, Tournament } from '@prisma/client';
-import { ForbiddenError, NotFoundError, ValidationError } from '@/errors/errors';
+import { ConflictError, ForbiddenError, NotFoundError, ValidationError } from '@/errors/errors';
 
 interface PaginationInfo {
     skip: number;
@@ -34,7 +34,7 @@ export async function getTournament(id: string): Promise<TournamentFull | null> 
 export async function createTournament(tournament: Prisma.TournamentUncheckedCreateInput): Promise<Tournament> {
     const session = await auth.api.getSession({ headers: await headers() });
     if (!session) {
-        redirect(`/auth/sign-in?callback=${encodeURI('/tournaments/create')}`);
+        redirect(`/auth/sign-in?callback=${encodeURI('/tournament/create')}`);
     }
 
     const organizerId = session.user.id;
@@ -85,4 +85,36 @@ export async function updateTournament(id: string, updatedFields: Prisma.Tournam
     }
 
     return prisma.tournament.update({ where: { id }, data: updatedFields });
+}
+
+export async function applyToTournament(id: string): Promise<void> {
+    const session = await auth.api.getSession({ headers: await headers() });
+    if (!session) {
+        redirect(`/auth/sign-in?callback=${encodeURI(`/tournaments/${id}`)}`);
+    }
+
+    const tournament = await prisma.tournament.findUnique({ where: { id }, include: { participants: true } });
+    if (tournament === null) {
+        throw new NotFoundError(`Tournament doesn't exist.`);
+    }
+
+    if (tournament.participants.length + 1 > tournament.maxParticipants) {
+        throw new ConflictError(`Tournament is full.`);
+    }
+
+    const userId = session.user.id;
+
+    const existingRegistration = await prisma.tournamentParticipants.findFirst({ where: { userId, tournamentId: id } });
+    if (existingRegistration !== null) {
+        throw new ConflictError(`User already applied for the tournament.`);
+    }
+
+    const newParticipation: Prisma.TournamentParticipantsUncheckedCreateInput = {
+        licenseNumber: 1,
+        ranking: 1,
+        userId,
+        tournamentId: id,
+    };
+
+    await prisma.tournamentParticipants.create({ data: { ...newParticipation } });
 }

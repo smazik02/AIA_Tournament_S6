@@ -99,5 +99,5 @@ export async function createTournamentAction(
 
     const newTournament = await createTournament({ ...validationResult.data, organizerId: '' });
     revalidatePath(`/`);
-    redirect(`/tournaments/${newTournament.id}`);
+    redirect(`/tournament/${newTournament.id}`);
 }

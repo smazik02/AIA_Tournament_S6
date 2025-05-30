@@ -18,6 +18,7 @@ import {
 } from '@mui/material';
 import { Business, Edit, EmojiEvents, Event, Group, HowToReg, LocationOn, Person } from '@mui/icons-material';
 import Link from 'next/link';
+import ApplyToTournamentButton from '@/components/main/ApplyToTournamentButton';
 
 interface TournamentPageProps {
     params: Promise<{ id: string }>;
@@ -48,8 +49,7 @@ async function TournamentPage({ params }: TournamentPageProps) {
     const isOwner = session?.user !== undefined && tournament.organizerId === session.user.id;
     const canParticipate =
         session?.user !== undefined &&
-        tournament.organizerId !== session.user.id &&
-        tournament.participants.find((participant) => participant.id === session.user.id) !== undefined;
+        tournament.participants.find((participant) => participant.userId === session.user.id) === undefined;
     const rankedPlayersCount = tournament.participants.length;
 
     return (
@@ -194,18 +194,17 @@ async function TournamentPage({ params }: TournamentPageProps) {
                         justifyContent: 'center',
                     }}
                 >
-                    {canParticipate && (
-                        <Button
-                            variant="contained"
-                            color="primary"
-                            startIcon={<HowToReg />}
-                            component={Link}
-                            href={`/tournament/${tournament.id}/signup`}
-                            sx={{ flexGrow: { sm: 1 } }}
-                        >
-                            Apply to Participate
-                        </Button>
-                    )}
+                    <ApplyToTournamentButton tournamentId={tournament.id} canParticipate={canParticipate} />
+                </Box>
+                <Box
+                    sx={{
+                        mt: 4,
+                        display: 'flex',
+                        flexDirection: { xs: 'column', sm: 'row' },
+                        gap: 2,
+                        justifyContent: 'center',
+                    }}
+                >
                     {isOwner && (
                         <Button
                             variant="outlined"
@@ -213,7 +212,6 @@ async function TournamentPage({ params }: TournamentPageProps) {
                             startIcon={<Edit />}
                             component={Link}
                             href={`/tournament/${tournament.id}/update`}
-                            sx={{ flexGrow: { sm: 1 } }}
                         >
                             Edit Tournament
                         </Button>
