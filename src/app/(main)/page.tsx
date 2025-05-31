@@ -1,7 +1,7 @@
 import { getAllTournamentsPaged, getTournamentsCount } from '@/data-access/tournaments';
 import { Box, Card, CardActionArea, CardContent, Container, Grid, Typography } from '@mui/material';
-import CreateTournamentButton from '@/components/main/CreateTournamentButton';
-import TournamentPagination from '@/components/main/TournamentPagination';
+import CreateTournamentButton from '@/components/main/tournament/CreateTournamentButton';
+import TournamentPagination from '@/components/main/tournament/TournamentPagination';
 import Link from 'next/link';
 
 const ITEMS_PER_PAGE = 10;

@@ -4,7 +4,7 @@ import { headers } from 'next/headers';
 import { redirect } from 'next/navigation';
 import { getTournament } from '@/data-access/tournaments';
 import { Suspense } from 'react';
-import UpdateTournamentForm from '@/components/main/UpdateTournamentForm';
+import UpdateTournamentForm from '@/components/main/tournament/UpdateTournamentForm';
 
 export const metadata: Metadata = {
     title: 'Edit tournament',

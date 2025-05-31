@@ -111,7 +111,8 @@ model Sponsor {
   id          String       @id @default(uuid(4))
   name        String
   logoUrl     String
-  tournaments Tournament[]
+  tournamentId String
+  tournaments Tournament @relation(fields: [tournamentId], references: [id])
 
   @@map("sponsors")
 }

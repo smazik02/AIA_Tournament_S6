@@ -12,14 +12,16 @@ import {
     Grid,
     List,
     ListItem,
+    ListItemAvatar,
     ListItemText,
     Paper,
     Typography,
 } from '@mui/material';
 import { Business, Edit, EmojiEvents, Event, Group, HowToReg, LocationOn, Person } from '@mui/icons-material';
 import Link from 'next/link';
-import ApplyToTournamentButton from '@/components/main/ApplyToTournamentButton';
+import ApplyToTournamentButton from '@/components/main/tournament/ApplyToTournamentButton';
 import { GoogleMapsEmbed } from '@next/third-parties/google';
+import AddSponsorModal from '@/components/main/tournament/AddSponsorModal';
 
 interface TournamentPageProps {
     params: Promise<{ id: string }>;
@@ -176,32 +178,33 @@ async function TournamentPage({ params }: TournamentPageProps) {
                     </Box>
                 )}
 
-                {tournament.sponsors && tournament.sponsors.length > 0 && (
-                    <Box mt={4}>
-                        <Typography
-                            variant="h5"
-                            component="h2"
-                            gutterBottom
-                            sx={{ display: 'flex', alignItems: 'center' }}
-                        >
-                            <Business sx={{ mr: 1 }} color="primary" /> Sponsors
-                        </Typography>
+                <Box mt={4}>
+                    <Typography variant="h5" component="h2" gutterBottom sx={{ display: 'flex', alignItems: 'center' }}>
+                        <Business sx={{ mr: 1 }} color="primary" /> Sponsors
+                    </Typography>
+                    {isOwner && <AddSponsorModal tournamentId={tournament.id} />}
+                    {tournament.sponsors.length > 0 && (
                         <List>
                             {tournament.sponsors.map((sponsor) => (
                                 <ListItem key={sponsor.id} disablePadding>
                                     {sponsor.logoUrl && (
-                                        <ListItem>
+                                        <ListItemAvatar>
                                             <Avatar src={sponsor.logoUrl} alt={sponsor.name}>
                                                 <Business /> {/* Fallback icon */}
                                             </Avatar>
-                                        </ListItem>
+                                        </ListItemAvatar>
                                     )}
                                     <ListItemText primary={sponsor.name} />
                                 </ListItem>
                             ))}
                         </List>
-                    </Box>
-                )}
+                    )}
+                    {tournament.sponsors.length === 0 && (
+                        <Typography variant="body1" sx={{ pt: 1 }}>
+                            No sponsors.
+                        </Typography>
+                    )}
+                </Box>
 
                 <Grid
                     container

@@ -57,7 +57,6 @@ export async function updateTournament(id: string, updatedFields: Prisma.Tournam
         throw new ForbiddenError('User cannot update this tournament');
     }
 
-    console.log(`Tournament has ${tournament.participants.length} participants`);
     if (tournament.participants.length > ((updatedFields.maxParticipants as number | undefined) ?? 0)) {
         throw new ValidationError('Tournament has more participants than new max limit.');
     }
@@ -116,5 +115,24 @@ export async function applyToTournament(id: string): Promise<void> {
         tournamentId: id,
     };
 
-    await prisma.tournamentParticipants.create({ data: { ...newParticipation } });
+    await prisma.tournamentParticipants.create({ data: newParticipation });
+}
+
+export async function addTournamentSponsor(tournamentId: string, newSponsor: Prisma.SponsorUncheckedCreateInput) {
+    const session = await auth.api.getSession({ headers: await headers() });
+    if (!session) {
+        redirect(`/auth/sign-in?callback=${encodeURI(`/tournaments/${tournamentId}`)}`);
+    }
+
+    const tournament = await prisma.tournament.findUnique({ where: { id: tournamentId } });
+    if (tournament === null) {
+        throw new NotFoundError(`Tournament doesn't exist.`);
+    }
+
+    const userId = session.user.id;
+    if (tournament.organizerId !== userId) {
+        throw new ForbiddenError('User cannot update this tournament');
+    }
+
+    await prisma.sponsor.create({ data: { ...newSponsor, tournamentId } });
 }

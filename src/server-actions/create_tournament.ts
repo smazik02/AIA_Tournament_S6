@@ -62,15 +62,7 @@ export interface CreateTournamentState {
     success: boolean;
     message: string;
     inputs?: TournamentFormInputs;
-    errors?: {
-        name?: string[];
-        discipline?: string[];
-        time?: string[];
-        location?: string[];
-        maxParticipants?: string[];
-        applicationDeadline?: string[];
-        _form?: string[];
-    };
+    errors?: Partial<Record<keyof TournamentFormInputs | '_form', string[]>>;
 }
 
 export async function createTournamentAction(
