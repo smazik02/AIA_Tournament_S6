@@ -65,7 +65,7 @@ function PasswordResetForm() {
     if (!token) {
         return (
             <>
-                Incorrect reset password link or another error has occured! Try again or contact the AIA Tournament
+                Incorrect reset password link or another error has occurred! Try again or contact the AIA Tournament
                 team.
             </>
         );
