@@ -19,6 +19,7 @@ import {
 import { Business, Edit, EmojiEvents, Event, Group, HowToReg, LocationOn, Person } from '@mui/icons-material';
 import Link from 'next/link';
 import ApplyToTournamentButton from '@/components/main/ApplyToTournamentButton';
+import { GoogleMapsEmbed } from '@next/third-parties/google';
 
 interface TournamentPageProps {
     params: Promise<{ id: string }>;
@@ -112,7 +113,13 @@ async function TournamentPage({ params }: TournamentPageProps) {
                                 <LocationOn sx={{ mr: 1 }} color="primary" /> Location
                             </Typography>
                             <Typography variant="body1">{tournament.location}</Typography>
-                            {/* Google Maps integration would go here later */}
+                            {tournament.location !== '' && (
+                                <GoogleMapsEmbed
+                                    apiKey={process.env.GOOGLE_MAPS_KEY ?? ''}
+                                    mode="place"
+                                    q={tournament.location}
+                                />
+                            )}
                         </Box>
                     </Grid>
 
