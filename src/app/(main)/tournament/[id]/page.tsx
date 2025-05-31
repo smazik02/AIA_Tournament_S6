@@ -189,6 +189,7 @@ async function TournamentPage({ params }: TournamentPageProps) {
                                 <ListItem
                                     key={sponsor.id}
                                     disablePadding
+                                    sx={{ m: 1 }}
                                     secondaryAction={
                                         <RemoveTournamentButton
                                             tournamentId={tournament.id}
