@@ -65,105 +65,116 @@ async function TournamentPage({ params }: TournamentPageProps) {
                     {tournament.name}
                 </Typography>
 
-                <Grid container spacing={3}>
+                <Grid container spacing={3} sx={{ display: 'flex', justifyContent: 'space-between' }}>
                     <Grid columns={{ xs: 12, md: 8 }}>
-                        <Box sx={{ mb: 3 }}>
-                            <Typography
-                                variant="h5"
-                                component="h2"
-                                gutterBottom
-                                sx={{ display: 'flex', alignItems: 'center' }}
-                            >
-                                <EmojiEvents sx={{ mr: 1 }} color="primary" /> Discipline
-                            </Typography>
-                            <Typography variant="body1">{tournament.discipline}</Typography>
-                        </Box>
+                        <Box sx={{ width: '100%', display: 'flex', flexDirection: 'column' }}>
+                            <Box sx={{ mb: 3 }}>
+                                <Typography
+                                    variant="h5"
+                                    component="h2"
+                                    gutterBottom
+                                    sx={{ display: 'flex', alignItems: 'center' }}
+                                >
+                                    <EmojiEvents sx={{ mr: 1 }} color="primary" /> Discipline
+                                </Typography>
+                                <Typography variant="body1">{tournament.discipline}</Typography>
+                            </Box>
 
-                        <Box mb={3}>
-                            <Typography
-                                variant="h5"
-                                component="h2"
-                                gutterBottom
-                                sx={{ display: 'flex', alignItems: 'center' }}
-                            >
-                                <Person sx={{ mr: 1 }} color="primary" /> Organizer
-                            </Typography>
-                            <Typography variant="body1">{tournament.organizer.name || 'N/A'}</Typography>
-                        </Box>
+                            <Box mb={3}>
+                                <Typography
+                                    variant="h5"
+                                    component="h2"
+                                    gutterBottom
+                                    sx={{ display: 'flex', alignItems: 'center' }}
+                                >
+                                    <Person sx={{ mr: 1 }} color="primary" /> Organizer
+                                </Typography>
+                                <Typography variant="body1">{tournament.organizer.name || 'N/A'}</Typography>
+                            </Box>
 
-                        <Box mb={3}>
-                            <Typography
-                                variant="h5"
-                                component="h2"
-                                gutterBottom
-                                sx={{ display: 'flex', alignItems: 'center' }}
-                            >
-                                <Event sx={{ mr: 1 }} color="primary" /> Date & Time
-                            </Typography>
-                            <Typography variant="body1">{formattedTime}</Typography>
-                        </Box>
+                            <Box mb={3}>
+                                <Typography
+                                    variant="h5"
+                                    component="h2"
+                                    gutterBottom
+                                    sx={{ display: 'flex', alignItems: 'center' }}
+                                >
+                                    <Event sx={{ mr: 1 }} color="primary" /> Date & Time
+                                </Typography>
+                                <Typography variant="body1">{formattedTime}</Typography>
+                            </Box>
 
-                        <Box mb={3}>
-                            <Typography
-                                variant="h5"
-                                component="h2"
-                                gutterBottom
-                                sx={{ display: 'flex', alignItems: 'center' }}
-                            >
-                                <LocationOn sx={{ mr: 1 }} color="primary" /> Location
-                            </Typography>
-                            <Typography variant="body1">{tournament.location}</Typography>
                             {tournament.location !== '' && (
-                                <GoogleMapsEmbed
-                                    apiKey={process.env.GOOGLE_MAPS_KEY ?? ''}
-                                    mode="place"
-                                    q={tournament.location}
-                                />
+                                <Box mb={3}>
+                                    <Typography
+                                        variant="h5"
+                                        component="h2"
+                                        gutterBottom
+                                        sx={{ display: 'flex', alignItems: 'center' }}
+                                    >
+                                        <LocationOn sx={{ mr: 1 }} color="primary" /> Location
+                                    </Typography>
+                                    <Typography variant="body1">{tournament.location}</Typography>
+                                </Box>
                             )}
                         </Box>
                     </Grid>
 
-                    <Grid columns={{ xs: 12, md: 4 }}>
-                        <Card variant="outlined" sx={{ p: 2, backgroundColor: 'action.hover' }}>
-                            <Box mb={2}>
-                                <Typography
-                                    variant="h6"
-                                    component="h3"
-                                    gutterBottom
-                                    sx={{ display: 'flex', alignItems: 'center' }}
-                                >
-                                    <Group sx={{ mr: 1 }} /> Max Participants
-                                </Typography>
-                                <Typography variant="body1">{tournament.maxParticipants}</Typography>
-                            </Box>
-                            <Divider sx={{ my: 1 }} />
-                            <Box mb={2}>
-                                <Typography
-                                    variant="h6"
-                                    component="h3"
-                                    gutterBottom
-                                    sx={{ display: 'flex', alignItems: 'center' }}
-                                >
-                                    <Event sx={{ mr: 1 }} /> Application Deadline
-                                </Typography>
-                                <Typography variant="body1">{formattedDeadline}</Typography>
-                            </Box>
-                            <Divider sx={{ my: 1 }} />
-                            <Box>
-                                <Typography
-                                    variant="h6"
-                                    component="h3"
-                                    gutterBottom
-                                    sx={{ display: 'flex', alignItems: 'center' }}
-                                >
-                                    <HowToReg sx={{ mr: 1 }} /> Registered Players
-                                </Typography>
-                                <Typography variant="body1">{rankedPlayersCount}</Typography>
-                                {/* This assumes "number of ranked players" means currently registered/applied. Adjust as needed. */}
-                            </Box>
-                        </Card>
+                    <Grid columns={{ xs: 12, md: 8 }}>
+                        <Box sx={{ width: '100%', display: 'flex', flexDirection: 'column', alignContent: 'center' }}>
+                            <Card variant="outlined" sx={{ p: 2, backgroundColor: 'action.hover' }}>
+                                <Box mb={2}>
+                                    <Typography
+                                        variant="h6"
+                                        component="h3"
+                                        gutterBottom
+                                        sx={{ display: 'flex', alignItems: 'center' }}
+                                    >
+                                        <Group sx={{ mr: 1 }} /> Max Participants
+                                    </Typography>
+                                    <Typography variant="body1">{tournament.maxParticipants}</Typography>
+                                </Box>
+                                <Divider sx={{ my: 1 }} />
+                                <Box mb={2}>
+                                    <Typography
+                                        variant="h6"
+                                        component="h3"
+                                        gutterBottom
+                                        sx={{ display: 'flex', alignItems: 'center' }}
+                                    >
+                                        <Event sx={{ mr: 1 }} /> Application Deadline
+                                    </Typography>
+                                    <Typography variant="body1">{formattedDeadline}</Typography>
+                                </Box>
+                                <Divider sx={{ my: 1 }} />
+                                <Box>
+                                    <Typography
+                                        variant="h6"
+                                        component="h3"
+                                        gutterBottom
+                                        sx={{ display: 'flex', alignItems: 'center' }}
+                                    >
+                                        <HowToReg sx={{ mr: 1 }} /> Registered Players
+                                    </Typography>
+                                    <Typography variant="body1">{rankedPlayersCount}</Typography>
+                                    {/* This assumes "number of ranked players" means currently registered/applied. Adjust as needed. */}
+                                </Box>
+                            </Card>
+                        </Box>
                     </Grid>
                 </Grid>
+
+                {tournament.location !== '' && (
+                    <Box sx={{ display: 'flex', justifyContent: 'center', width: '100%', mt: 2 }}>
+                        <GoogleMapsEmbed
+                            mode="place"
+                            height={400}
+                            width="100%;"
+                            q={tournament.location}
+                            apiKey={process.env.GOOGLE_MAPS_KEY ?? ''}
+                        />
+                    </Box>
+                )}
 
                 {tournament.sponsors && tournament.sponsors.length > 0 && (
                     <Box mt={4}>
@@ -192,38 +203,47 @@ async function TournamentPage({ params }: TournamentPageProps) {
                     </Box>
                 )}
 
-                <Box
+                <Grid
+                    container
                     sx={{
-                        mt: 4,
                         display: 'flex',
+                        justifyContent: 'space-around',
                         flexDirection: { xs: 'column', sm: 'row' },
-                        gap: 2,
-                        justifyContent: 'center',
                     }}
                 >
-                    <ApplyToTournamentButton tournamentId={tournament.id} canParticipate={canParticipate} />
-                </Box>
-                <Box
-                    sx={{
-                        mt: 4,
-                        display: 'flex',
-                        flexDirection: { xs: 'column', sm: 'row' },
-                        gap: 2,
-                        justifyContent: 'center',
-                    }}
-                >
-                    {isOwner && (
-                        <Button
-                            variant="outlined"
-                            color="secondary"
-                            startIcon={<Edit />}
-                            component={Link}
-                            href={`/tournament/${tournament.id}/update`}
+                    <Grid columns={{ xs: 12, md: 8 }}>
+                        <Box
+                            sx={{
+                                display: 'flex',
+                                justifyContent: 'center',
+                                mt: 2,
+                            }}
                         >
-                            Edit Tournament
-                        </Button>
-                    )}
-                </Box>
+                            <ApplyToTournamentButton tournamentId={tournament.id} canParticipate={canParticipate} />
+                        </Box>
+                    </Grid>
+                    <Grid columns={{ xs: 12, md: 8 }}>
+                        <Box
+                            sx={{
+                                display: 'flex',
+                                justifyContent: 'center',
+                                mt: 2,
+                            }}
+                        >
+                            {isOwner && (
+                                <Button
+                                    variant="outlined"
+                                    color="secondary"
+                                    startIcon={<Edit />}
+                                    component={Link}
+                                    href={`/tournament/${tournament.id}/update`}
+                                >
+                                    Edit Tournament
+                                </Button>
+                            )}
+                        </Box>
+                    </Grid>
+                </Grid>
             </Paper>
         </Container>
     );

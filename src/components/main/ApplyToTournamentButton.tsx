@@ -29,7 +29,6 @@ function ApplyToTournamentButton({ tournamentId, canParticipate }: ApplyToTourna
                     disabled={isPending || !canParticipate}
                     startIcon={<HowToReg />}
                     color={state.message === '' ? 'primary' : 'error'}
-                    sx={{ m: 1 }}
                 >
                     {isPending ? 'Loading...' : 'Apply to participate'}
                 </Button>
