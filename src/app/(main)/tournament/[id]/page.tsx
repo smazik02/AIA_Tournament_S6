@@ -22,6 +22,7 @@ import Link from 'next/link';
 import ApplyToTournamentButton from '@/components/main/tournament/ApplyToTournamentButton';
 import { GoogleMapsEmbed } from '@next/third-parties/google';
 import AddSponsorModal from '@/components/main/tournament/AddSponsorModal';
+import RemoveTournamentButton from '@/components/main/tournament/RemoveTournamentButton';
 
 interface TournamentPageProps {
     params: Promise<{ id: string }>;
@@ -159,7 +160,6 @@ async function TournamentPage({ params }: TournamentPageProps) {
                                         <HowToReg sx={{ mr: 1 }} /> Registered Players
                                     </Typography>
                                     <Typography variant="body1">{rankedPlayersCount}</Typography>
-                                    {/* This assumes "number of ranked players" means currently registered/applied. Adjust as needed. */}
                                 </Box>
                             </Card>
                         </Box>
@@ -186,7 +186,17 @@ async function TournamentPage({ params }: TournamentPageProps) {
                     {tournament.sponsors.length > 0 && (
                         <List>
                             {tournament.sponsors.map((sponsor) => (
-                                <ListItem key={sponsor.id} disablePadding>
+                                <ListItem
+                                    key={sponsor.id}
+                                    disablePadding
+                                    secondaryAction={
+                                        <RemoveTournamentButton
+                                            tournamentId={tournament.id}
+                                            sponsorId={sponsor.id}
+                                            isHidden={!isOwner}
+                                        />
+                                    }
+                                >
                                     {sponsor.logoUrl && (
                                         <ListItemAvatar>
                                             <Avatar src={sponsor.logoUrl} alt={sponsor.name}>

@@ -1,6 +1,6 @@
 'use client';
 
-import { addTournamentSponsorAction, TournamentSponsorState } from '@/server-actions/tournament_add_sponsor';
+import { addTournamentSponsorAction, TournamentSponsorState } from '@/server-actions/sponsors';
 import { useActionState, useState } from 'react';
 import { Alert, Box, Button, FormControl, Modal, Stack, TextField } from '@mui/material';
 import Form from 'next/form';

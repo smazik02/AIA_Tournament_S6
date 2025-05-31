@@ -1,9 +1,10 @@
 'use server';
 
 import { z } from 'zod';
-import { addTournamentSponsor } from '@/data-access/tournaments';
+import { addTournamentSponsor, deleteTournamentSponsor } from '@/data-access/tournaments';
 import { revalidatePath } from 'next/cache';
 import { ForbiddenError, NotFoundError } from '@/errors/errors';
+import { redirect } from 'next/navigation';
 
 const tournamentSponsorSchema = z.object({
     name: z.string({ required_error: 'Name is required' }).min(1, 'Name cannot be empty'),
@@ -76,4 +77,17 @@ export async function addTournamentSponsorAction(
         success: true,
         message: 'Sponsor added.',
     };
+}
+
+export async function deleteTournamentSponsorAction(tournamentId: string, sponsorId: string): Promise<void> {
+    try {
+        await deleteTournamentSponsor(tournamentId, sponsorId);
+    } catch (error: unknown) {
+        console.error(error);
+        if (error instanceof NotFoundError) {
+            redirect('/');
+        }
+    } finally {
+        revalidatePath(`/tournament/${tournamentId}`);
+    }
 }

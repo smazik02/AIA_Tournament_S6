@@ -136,3 +136,26 @@ export async function addTournamentSponsor(tournamentId: string, newSponsor: Pri
 
     await prisma.sponsor.create({ data: { ...newSponsor, tournamentId } });
 }
+
+export async function deleteTournamentSponsor(tournamentId: string, sponsorId: string) {
+    const session = await auth.api.getSession({ headers: await headers() });
+    if (!session) {
+        redirect(`/auth/sign-in?callback=${encodeURI(`/tournaments/${tournamentId}`)}`);
+    }
+
+    const userId = session.user.id;
+    const tournament = await prisma.tournament.findUnique({ where: { id: tournamentId } });
+    if (tournament === null) {
+        throw new NotFoundError(`Tournament doesn't exist.`);
+    }
+    if (tournament.organizerId !== userId) {
+        throw new ForbiddenError('User cannot update this tournament');
+    }
+
+    const sponsor = await prisma.sponsor.findUnique({ where: { id: sponsorId } });
+    if (!sponsor) {
+        throw new NotFoundError(`Sponsor doesn't exist.`);
+    }
+
+    await prisma.sponsor.delete({ where: { id: sponsorId } });
+}
