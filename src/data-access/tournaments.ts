@@ -47,43 +47,45 @@ export async function updateTournament(id: string, updatedFields: Prisma.Tournam
         throw new UnauthorizedError('User is not logged in.');
     }
 
-    const tournament = await prisma.tournament.findUnique({ where: { id }, include: { participants: true } });
-    if (tournament === null) {
-        throw new NotFoundError(`Tournament with id ${id} doesn't exist`);
-    }
-
-    const userId = session.user.id;
-    if (tournament.organizerId !== userId) {
-        throw new ForbiddenError('User cannot update this tournament');
-    }
-
-    if (tournament.participants.length > ((updatedFields.maxParticipants as number | undefined) ?? 0)) {
-        throw new ValidationError('Tournament has more participants than new max limit.');
-    }
-
-    if (updatedFields.time !== undefined && updatedFields.applicationDeadline !== undefined) {
-        const newTournamentTime = new Date(updatedFields.time.toString());
-        const newApplicationDeadline = new Date(updatedFields.applicationDeadline.toString());
-        if (newTournamentTime < newApplicationDeadline) {
-            throw new ValidationError("Application deadline has to be before tournament's time.");
+    return prisma.$transaction(async (tx) => {
+        const tournament = await tx.tournament.findUnique({ where: { id }, include: { participants: true } });
+        if (tournament === null) {
+            throw new NotFoundError(`Tournament with id ${id} doesn't exist`);
         }
-    }
 
-    if (updatedFields.time !== undefined) {
-        const newTournamentTime = new Date(updatedFields.time.toString());
-        if (newTournamentTime < tournament.applicationDeadline) {
-            throw new ValidationError("Application deadline has to be before tournament's time.");
+        const userId = session.user.id;
+        if (tournament.organizerId !== userId) {
+            throw new ForbiddenError('User cannot update this tournament');
         }
-    }
 
-    if (updatedFields.applicationDeadline !== undefined) {
-        const newApplicationDeadline = new Date(updatedFields.applicationDeadline.toString());
-        if (newApplicationDeadline > tournament.time) {
-            throw new ValidationError("Application deadline has to be before tournament's time.");
+        if (tournament.participants.length > ((updatedFields.maxParticipants as number | undefined) ?? 0)) {
+            throw new ValidationError('Tournament has more participants than new max limit.');
         }
-    }
 
-    return prisma.tournament.update({ where: { id }, data: updatedFields });
+        if (updatedFields.time !== undefined && updatedFields.applicationDeadline !== undefined) {
+            const newTournamentTime = new Date(updatedFields.time.toString());
+            const newApplicationDeadline = new Date(updatedFields.applicationDeadline.toString());
+            if (newTournamentTime < newApplicationDeadline) {
+                throw new ValidationError("Application deadline has to be before tournament's time.");
+            }
+        }
+
+        if (updatedFields.time !== undefined) {
+            const newTournamentTime = new Date(updatedFields.time.toString());
+            if (newTournamentTime < tournament.applicationDeadline) {
+                throw new ValidationError("Application deadline has to be before tournament's time.");
+            }
+        }
+
+        if (updatedFields.applicationDeadline !== undefined) {
+            const newApplicationDeadline = new Date(updatedFields.applicationDeadline.toString());
+            if (newApplicationDeadline > tournament.time) {
+                throw new ValidationError("Application deadline has to be before tournament's time.");
+            }
+        }
+
+        return tx.tournament.update({ where: { id }, data: updatedFields });
+    });
 }
 
 export async function applyToTournament(id: string): Promise<void> {
@@ -92,30 +94,32 @@ export async function applyToTournament(id: string): Promise<void> {
         redirect(`/auth/sign-in?callback=${encodeURI(`/tournaments/${id}`)}`);
     }
 
-    const tournament = await prisma.tournament.findUnique({ where: { id }, include: { participants: true } });
-    if (tournament === null) {
-        throw new NotFoundError(`Tournament doesn't exist.`);
-    }
+    return prisma.$transaction(async (tx) => {
+        const tournament = await tx.tournament.findUnique({ where: { id }, include: { participants: true } });
+        if (tournament === null) {
+            throw new NotFoundError(`Tournament doesn't exist.`);
+        }
 
-    if (tournament.participants.length + 1 > tournament.maxParticipants) {
-        throw new ConflictError(`Tournament is full.`);
-    }
+        if (tournament.participants.length + 1 > tournament.maxParticipants) {
+            throw new ConflictError(`Tournament is full.`);
+        }
 
-    const userId = session.user.id;
+        const userId = session.user.id;
 
-    const existingRegistration = await prisma.tournamentParticipants.findFirst({ where: { userId, tournamentId: id } });
-    if (existingRegistration !== null) {
-        throw new ConflictError(`User already applied for the tournament.`);
-    }
+        const existingRegistration = await tx.tournamentParticipants.findFirst({ where: { userId, tournamentId: id } });
+        if (existingRegistration !== null) {
+            throw new ConflictError(`User already applied for the tournament.`);
+        }
 
-    const newParticipation: Prisma.TournamentParticipantsUncheckedCreateInput = {
-        licenseNumber: 1,
-        ranking: 1,
-        userId,
-        tournamentId: id,
-    };
+        const newParticipation: Prisma.TournamentParticipantsUncheckedCreateInput = {
+            licenseNumber: 1,
+            ranking: 1,
+            userId,
+            tournamentId: id,
+        };
 
-    await prisma.tournamentParticipants.create({ data: newParticipation });
+        await tx.tournamentParticipants.create({ data: newParticipation });
+    });
 }
 
 export async function addTournamentSponsor(tournamentId: string, newSponsor: Prisma.SponsorUncheckedCreateInput) {
@@ -124,17 +128,19 @@ export async function addTournamentSponsor(tournamentId: string, newSponsor: Pri
         redirect(`/auth/sign-in?callback=${encodeURI(`/tournaments/${tournamentId}`)}`);
     }
 
-    const tournament = await prisma.tournament.findUnique({ where: { id: tournamentId } });
-    if (tournament === null) {
-        throw new NotFoundError(`Tournament doesn't exist.`);
-    }
+    return prisma.$transaction(async (tx) => {
+        const tournament = await tx.tournament.findUnique({ where: { id: tournamentId } });
+        if (tournament === null) {
+            throw new NotFoundError(`Tournament doesn't exist.`);
+        }
 
-    const userId = session.user.id;
-    if (tournament.organizerId !== userId) {
-        throw new ForbiddenError('User cannot update this tournament');
-    }
+        const userId = session.user.id;
+        if (tournament.organizerId !== userId) {
+            throw new ForbiddenError('User cannot update this tournament');
+        }
 
-    await prisma.sponsor.create({ data: { ...newSponsor, tournamentId } });
+        await tx.sponsor.create({ data: { ...newSponsor, tournamentId } });
+    });
 }
 
 export async function deleteTournamentSponsor(tournamentId: string, sponsorId: string) {
@@ -143,19 +149,21 @@ export async function deleteTournamentSponsor(tournamentId: string, sponsorId: s
         redirect(`/auth/sign-in?callback=${encodeURI(`/tournaments/${tournamentId}`)}`);
     }
 
-    const userId = session.user.id;
-    const tournament = await prisma.tournament.findUnique({ where: { id: tournamentId } });
-    if (tournament === null) {
-        throw new NotFoundError(`Tournament doesn't exist.`);
-    }
-    if (tournament.organizerId !== userId) {
-        throw new ForbiddenError('User cannot update this tournament');
-    }
+    return prisma.$transaction(async (tx) => {
+        const userId = session.user.id;
+        const tournament = await tx.tournament.findUnique({ where: { id: tournamentId } });
+        if (tournament === null) {
+            throw new NotFoundError(`Tournament doesn't exist.`);
+        }
+        if (tournament.organizerId !== userId) {
+            throw new ForbiddenError('User cannot update this tournament');
+        }
 
-    const sponsor = await prisma.sponsor.findUnique({ where: { id: sponsorId } });
-    if (!sponsor) {
-        throw new NotFoundError(`Sponsor doesn't exist.`);
-    }
+        const sponsor = await tx.sponsor.findUnique({ where: { id: sponsorId } });
+        if (!sponsor) {
+            throw new NotFoundError(`Sponsor doesn't exist.`);
+        }
 
-    await prisma.sponsor.delete({ where: { id: sponsorId } });
+        await tx.sponsor.delete({ where: { id: sponsorId } });
+    });
 }
