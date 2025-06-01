@@ -88,11 +88,11 @@ export async function updateTournamentAction(
         if (error instanceof UnauthorizedError) {
             redirect(`/auth/sign-in?callback=${encodeURI('/tournaments/update')}`);
         }
-        if (error instanceof NotFoundError) {
-            return { ...toReturn, message: 'Tournament does not seem to exist.' };
-        }
         if (error instanceof ForbiddenError) {
             return { ...toReturn, message: 'You do not have permission to update this tournament.' };
+        }
+        if (error instanceof NotFoundError) {
+            return { ...toReturn, message: 'Tournament does not seem to exist.' };
         }
         if (error instanceof ValidationError) {
             return { ...toReturn, message: error.message };

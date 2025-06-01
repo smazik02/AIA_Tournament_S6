@@ -3,7 +3,7 @@
 import { z } from 'zod';
 import { addTournamentSponsor, deleteTournamentSponsor } from '@/data-access/tournaments';
 import { revalidatePath } from 'next/cache';
-import { ForbiddenError, NotFoundError } from '@/errors/errors';
+import { ForbiddenError, NotFoundError, UnauthorizedError } from '@/errors/errors';
 import { redirect } from 'next/navigation';
 
 const tournamentSponsorSchema = z.object({
@@ -51,17 +51,20 @@ export async function addTournamentSponsorAction(
         await addTournamentSponsor(validationResult.data.tournamentId, validationResult.data);
     } catch (error: unknown) {
         console.error(error);
-        if (error instanceof NotFoundError) {
-            return {
-                success: false,
-                message: 'Tournament does not seem to exist.',
-                inputs: rawInputs,
-            };
+        if (error instanceof UnauthorizedError) {
+            redirect(`/auth/sign-in?callback=${encodeURI(`/tournaments/${validationResult.data.tournamentId}`)}`);
         }
         if (error instanceof ForbiddenError) {
             return {
                 success: false,
                 message: 'You do not have permission to update this tournament.',
+                inputs: rawInputs,
+            };
+        }
+        if (error instanceof NotFoundError) {
+            return {
+                success: false,
+                message: 'Tournament does not seem to exist.',
                 inputs: rawInputs,
             };
         }
@@ -84,6 +87,9 @@ export async function deleteTournamentSponsorAction(tournamentId: string, sponso
         await deleteTournamentSponsor(tournamentId, sponsorId);
     } catch (error: unknown) {
         console.error(error);
+        if (error instanceof UnauthorizedError) {
+            redirect(`/auth/sign-in?callback=${encodeURI(`/tournaments/${tournamentId}`)}`);
+        }
         if (error instanceof NotFoundError) {
             redirect('/');
         }

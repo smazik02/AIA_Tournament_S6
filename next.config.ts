@@ -10,6 +10,9 @@ const nextConfig: NextConfig = {
             },
         ];
     },
+    experimental: {
+        optimizePackageImports: ['package-name'],
+    },
 };
 
 export default nextConfig;

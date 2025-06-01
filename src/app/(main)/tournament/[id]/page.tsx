@@ -37,6 +37,8 @@ async function TournamentPage({ params }: TournamentPageProps) {
         notFound();
     }
 
+    const rankedPlayersCount = tournament.participants.length;
+
     const formattedTime = new Date(tournament.time).toLocaleString([], {
         year: 'numeric',
         month: 'long',
@@ -51,10 +53,9 @@ async function TournamentPage({ params }: TournamentPageProps) {
     });
 
     const isOwner = session?.user !== undefined && tournament.organizerId === session.user.id;
-    const canParticipate =
+    const participates =
         session?.user !== undefined &&
-        tournament.participants.find((participant) => participant.userId === session.user.id) === undefined;
-    const rankedPlayersCount = tournament.participants.length;
+        tournament.participants.find((participant) => participant.userId === session.user.id) !== undefined;
 
     return (
         <Container maxWidth="md" sx={{ py: 4 }}>
@@ -233,18 +234,18 @@ async function TournamentPage({ params }: TournamentPageProps) {
                                 mt: 2,
                             }}
                         >
-                            <ApplyToTournamentButton tournamentId={tournament.id} canParticipate={canParticipate} />
+                            <ApplyToTournamentButton tournamentId={tournament.id} participates={participates} />
                         </Box>
                     </Grid>
-                    <Grid columns={{ xs: 12, md: 8 }}>
-                        <Box
-                            sx={{
-                                display: 'flex',
-                                justifyContent: 'center',
-                                mt: 2,
-                            }}
-                        >
-                            {isOwner && (
+                    {isOwner && (
+                        <Grid columns={{ xs: 12, md: 8 }}>
+                            <Box
+                                sx={{
+                                    display: 'flex',
+                                    justifyContent: 'center',
+                                    mt: 2,
+                                }}
+                            >
                                 <Button
                                     variant="outlined"
                                     color="secondary"
@@ -254,9 +255,9 @@ async function TournamentPage({ params }: TournamentPageProps) {
                                 >
                                     Edit Tournament
                                 </Button>
-                            )}
-                        </Box>
-                    </Grid>
+                            </Box>
+                        </Grid>
+                    )}
                 </Grid>
             </Paper>
         </Container>
