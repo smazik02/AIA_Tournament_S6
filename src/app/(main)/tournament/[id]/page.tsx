@@ -19,7 +19,7 @@ import {
 } from '@mui/material';
 import { Business, Edit, EmojiEvents, Event, Group, HowToReg, LocationOn, Person } from '@mui/icons-material';
 import Link from 'next/link';
-import ApplyToTournamentButton from '@/components/main/tournament/ApplyToTournamentButton';
+import ApplyToTournamentForm from '@/components/main/tournament/ApplyToTournamentForm';
 import { GoogleMapsEmbed } from '@next/third-parties/google';
 import AddSponsorModal from '@/components/main/tournament/AddSponsorModal';
 import RemoveTournamentButton from '@/components/main/tournament/RemoveTournamentButton';
@@ -54,8 +54,7 @@ async function TournamentPage({ params }: TournamentPageProps) {
 
     const isOwner = session?.user !== undefined && tournament.organizerId === session.user.id;
     const participates =
-        session?.user !== undefined &&
-        tournament.participants.find((participant) => participant.userId === session.user.id) !== undefined;
+        session?.user !== undefined && tournament.participants.find((p) => p.userId === session.user.id) !== undefined;
 
     return (
         <Container maxWidth="md" sx={{ py: 4 }}>
@@ -234,7 +233,7 @@ async function TournamentPage({ params }: TournamentPageProps) {
                                 mt: 2,
                             }}
                         >
-                            <ApplyToTournamentButton tournamentId={tournament.id} participates={participates} />
+                            <ApplyToTournamentForm tournamentId={tournament.id} participates={participates} />
                         </Box>
                     </Grid>
                     {isOwner && (

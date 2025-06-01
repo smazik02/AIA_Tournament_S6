@@ -1,12 +1,30 @@
 'use server';
 
-import { ConflictError, NotFoundError, UnauthorizedError } from '@/errors/errors';
+import { ConflictError, NotFoundError, UnauthorizedError, ValidationError } from '@/errors/errors';
 import { auth } from '@/lib/auth';
 import prisma from '@/lib/prisma';
-import { Prisma } from '@prisma/client';
+import { Prisma, TournamentParticipants } from '@prisma/client';
 import { headers } from 'next/headers';
 
-export async function applyToTournament(id: string): Promise<void> {
+export async function getTournamentApplication(tournamentId: string): Promise<TournamentParticipants | null> {
+    const session = await auth.api.getSession({ headers: await headers() });
+    if (!session) return null;
+
+    return prisma.tournamentParticipants.findFirst({ where: { id: session.user.id, tournamentId } });
+}
+
+export async function applyToTournament(
+    id: string,
+    licenseNumber: number | undefined,
+    ranking: number | undefined,
+): Promise<void> {
+    if (licenseNumber === undefined) {
+        throw new ValidationError('License number is required');
+    }
+    if (ranking === undefined) {
+        throw new ValidationError('Ranking is required');
+    }
+
     const session = await auth.api.getSession({ headers: await headers() });
     if (!session) {
         throw new UnauthorizedError('User is not logged in.');
@@ -29,13 +47,21 @@ export async function applyToTournament(id: string): Promise<void> {
         }
 
         const newParticipation: Prisma.TournamentParticipantsUncheckedCreateInput = {
-            licenseNumber: 1,
-            ranking: 1,
+            licenseNumber,
+            ranking,
             userId,
             tournamentId: id,
         };
 
-        await tx.tournamentParticipants.create({ data: newParticipation });
+        try {
+            await tx.tournamentParticipants.create({ data: newParticipation });
+        } catch (error: unknown) {
+            if (error instanceof Prisma.PrismaClientKnownRequestError && error.code === 'P2002') {
+                throw new ConflictError('Ranking or license number are not unique.');
+            }
+
+            throw error;
+        }
     });
 }
 

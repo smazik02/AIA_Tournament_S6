@@ -68,3 +68,20 @@ export const updateTournamentSchema = z
             path: ['time'],
         },
     );
+
+export const tournamentApplicationSchema = z.object({
+    tournamentId: z.string({ required_error: 'Tournament Id is required' }).min(1, 'Tournament Id cannot be empty'),
+    participates: z
+        .enum(['true', 'false'], { required_error: 'Participation info is required' })
+        .transform((value) => value === 'true'),
+    licenseNumber: z.coerce
+        .number()
+        .int('License number must be an integer')
+        .min(0, 'License number must be a positive integer')
+        .optional(),
+    ranking: z.coerce
+        .number()
+        .int('Ranking must be an integer')
+        .min(0, 'Ranking must be a positive integer')
+        .optional(),
+});

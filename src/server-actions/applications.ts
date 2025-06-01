@@ -1,14 +1,16 @@
 'use server';
 
 import { applyToTournament, declineTournamentApplication } from '@/data-access/applications';
-import { ConflictError, NotFoundError, UnauthorizedError } from '@/errors/errors';
+import { ConflictError, NotFoundError, UnauthorizedError, ValidationError } from '@/errors/errors';
 import { revalidatePath } from 'next/cache';
 import { redirect } from 'next/navigation';
+import { tournamentApplicationSchema } from './schemas';
 
 interface ApplicationFormInputs {
-    tournamentId: string;
-    licenseNumber: number;
-    ranking: number;
+    tournamentId?: string;
+    participates?: string;
+    licenseNumber?: string;
+    ranking?: string;
 }
 
 export interface ApplicationState {
@@ -19,17 +21,31 @@ export interface ApplicationState {
 }
 
 export async function tournamentApplicationAction(_: ApplicationState, formData: FormData): Promise<ApplicationState> {
-    const tournamentId = formData.get('tournamentId') as string | null;
-    const participates = formData.get('participates') as string | null;
-    if (tournamentId === null || participates === null) {
-        return { success: false, message: 'Insufficient provided data' };
+    const rawInputs: ApplicationFormInputs = {
+        tournamentId: formData.get('tournamentId') !== null ? `${formData.get('tournamentId')}` : undefined,
+        participates: formData.get('participates') !== null ? `${formData.get('participates')}` : undefined,
+        licenseNumber: formData.get('licenseNumber') !== null ? `${formData.get('licenseNumber')}` : undefined,
+        ranking: formData.get('ranking') !== null ? `${formData.get('ranking')}` : undefined,
+    };
+
+    const validationResult = tournamentApplicationSchema.safeParse(rawInputs);
+    if (!validationResult.success) {
+        const flattenedErrors = validationResult.error.flatten();
+        console.log('Validation failed:', flattenedErrors.fieldErrors);
+        return {
+            success: false,
+            message: 'Form validation failed. Please check your inputs.',
+            inputs: rawInputs,
+            errors: flattenedErrors.fieldErrors,
+        };
     }
 
+    const { tournamentId, participates, licenseNumber, ranking } = validationResult.data;
     try {
-        if (participates === 'true') {
+        if (participates) {
             await declineTournamentApplication(tournamentId);
         } else {
-            await applyToTournament(tournamentId);
+            await applyToTournament(tournamentId, licenseNumber, ranking);
         }
     } catch (error: unknown) {
         console.error(error);
@@ -40,7 +56,7 @@ export async function tournamentApplicationAction(_: ApplicationState, formData:
         if (error instanceof NotFoundError) {
             redirect('/');
         }
-        if (error instanceof ConflictError) {
+        if (error instanceof ConflictError || error instanceof ValidationError) {
             return { success: false, message: error.message };
         }
         return { success: false, message: 'Something went wrong. Try again later.' };
