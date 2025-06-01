@@ -40,6 +40,10 @@ export async function applyToTournament(
             throw new ConflictError(`Tournament is full.`);
         }
 
+        if (new Date() > new Date(tournament.applicationDeadline)) {
+            throw new ConflictError(`Application deadline has passed.`);
+        }
+
         const userId = session.user.id;
         const existingRegistration = tournament.participants.find((p) => p.userId === userId);
         if (existingRegistration !== undefined) {
@@ -75,6 +79,10 @@ export async function declineTournamentApplication(id: string) {
         const tournament = await tx.tournament.findUnique({ where: { id } });
         if (tournament === null) {
             throw new NotFoundError(`Tournament doesn't exist.`);
+        }
+
+        if (new Date() > new Date(tournament.applicationDeadline)) {
+            throw new ConflictError(`Application deadline has passed.`);
         }
 
         const userId = session.user.id;

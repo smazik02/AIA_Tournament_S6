@@ -15,7 +15,7 @@ datasource db {
 }
 
 model User {
-  id                   String                   @id
+  id                   String                  @id
   name                 String
   email                String
   emailVerified        Boolean
@@ -25,7 +25,9 @@ model User {
   sessions             Session[]
   accounts             Account[]
   organizedTournaments Tournament[]
-  joinedTournaments    TournamentParticipants[]
+  joinedTournaments    TournamentParticipant[]
+  matchesAsPlayer1     Match[]                 @relation(name: "player1")
+  matchesAsPlayer2     Match[]                 @relation(name: "player2")
 
   @@unique([email])
   @@map("users")
@@ -77,23 +79,24 @@ model Verification {
 }
 
 model Tournament {
-  id                  String                   @id @default(uuid(4))
+  id                  String                  @id @default(uuid(4))
   name                String
   discipline          String
   time                DateTime
   location            String
   maxParticipants     Int
   applicationDeadline DateTime
-  creationDate        DateTime                 @default(now())
-  sponsors            Sponsor[]
+  creationDate        DateTime                @default(now())
   organizerId         String
-  organizer           User                     @relation(fields: [organizerId], references: [id])
-  participants        TournamentParticipants[]
+  organizer           User                    @relation(fields: [organizerId], references: [id])
+  sponsors            Sponsor[]
+  participants        TournamentParticipant[]
+  Match               Match[]
 
   @@map("tournaments")
 }
 
-model TournamentParticipants {
+model TournamentParticipant {
   id               String     @id @default(uuid(4))
   licenseNumber    Int
   ranking          Int
@@ -108,11 +111,24 @@ model TournamentParticipants {
 }
 
 model Sponsor {
-  id          String       @id @default(uuid(4))
-  name        String
-  logoUrl     String
+  id           String     @id @default(uuid(4))
+  name         String
+  logoUrl      String
   tournamentId String
-  tournaments Tournament @relation(fields: [tournamentId], references: [id])
+  tournaments  Tournament @relation(fields: [tournamentId], references: [id])
 
   @@map("sponsors")
+}
+
+model Match {
+  id           String     @id @default(uuid(4))
+  date         DateTime
+  tournamentId String
+  tournament   Tournament @relation(fields: [tournamentId], references: [id])
+  player1Id    String
+  player1      User       @relation(fields: [player1Id], references: [id], name: "player1")
+  player2Id    String
+  player2      User       @relation(fields: [player2Id], references: [id], name: "player2")
+
+  @@map("matches")
 }
