@@ -1,23 +1,23 @@
 'use client';
 
+import { ApplicationState, tournamentApplicationAction } from '@/server-actions/applications';
 import { HowToReg, PersonRemove } from '@mui/icons-material';
 import { Alert, Box, Button } from '@mui/material';
-import { useActionState } from 'react';
-import { applyToTournamentAction, ApplyToTournamentState } from '@/server-actions/apply_to_tournament';
 import Form from 'next/form';
+import { useActionState } from 'react';
 
 interface ApplyToTournamentButtonProps {
     tournamentId: string;
     participates: boolean;
 }
 
-const initialState: ApplyToTournamentState = {
+const initialState: ApplicationState = {
     success: false,
     message: '',
 };
 
 function ApplyToTournamentButton({ tournamentId, participates }: ApplyToTournamentButtonProps) {
-    const [state, formAction, isPending] = useActionState(applyToTournamentAction, initialState);
+    const [state, formAction, isPending] = useActionState(tournamentApplicationAction, initialState);
 
     const buttonText = (() => {
         if (isPending) {

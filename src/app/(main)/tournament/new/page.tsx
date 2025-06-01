@@ -2,13 +2,13 @@
 
 import { Alert, Box, Button, FormControl, Stack, TextField } from '@mui/material';
 import Form from 'next/form';
-import { createTournamentAction, CreateTournamentState } from '@/server-actions/create_tournament';
 import { useActionState, useState } from 'react';
 import { DateTimePicker, LocalizationProvider } from '@mui/x-date-pickers';
 import dayjs from 'dayjs';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
+import { createTournamentAction, TournamentState } from '@/server-actions/tournaments';
 
-const initialState: CreateTournamentState = {
+const initialState: TournamentState = {
     success: false,
     message: '',
 };

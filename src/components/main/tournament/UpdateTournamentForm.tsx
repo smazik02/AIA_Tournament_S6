@@ -2,19 +2,19 @@
 
 import { TournamentFull } from '@/data-access/tournaments';
 import { use, useActionState, useState } from 'react';
-import { updateTournamentAction, UpdateTournamentState } from '@/server-actions/edit_tournament';
 import { DateTimePicker, LocalizationProvider } from '@mui/x-date-pickers';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import { Alert, Box, Button, FormControl, Stack, TextField } from '@mui/material';
 import Form from 'next/form';
 import dayjs from 'dayjs';
 import { useRouter } from 'next/navigation';
+import { TournamentState, updateTournamentAction } from '@/server-actions/tournaments';
 
 interface UpdateTournamentFormProps {
     tournament: Promise<TournamentFull | null>;
 }
 
-const initialState: UpdateTournamentState = {
+const initialState: TournamentState = {
     success: false,
     message: '',
 };

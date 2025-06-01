@@ -1,10 +1,10 @@
 'use server';
 
 import { z } from 'zod';
-import { addTournamentSponsor, deleteTournamentSponsor } from '@/data-access/tournaments';
 import { revalidatePath } from 'next/cache';
 import { ForbiddenError, NotFoundError, UnauthorizedError } from '@/errors/errors';
 import { redirect } from 'next/navigation';
+import { addTournamentSponsor, deleteTournamentSponsor } from '@/data-access/sponsors';
 
 const tournamentSponsorSchema = z.object({
     name: z.string({ required_error: 'Name is required' }).min(1, 'Name cannot be empty'),

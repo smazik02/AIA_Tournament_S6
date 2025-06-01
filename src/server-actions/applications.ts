@@ -1,19 +1,24 @@
 'use server';
 
-import { applyToTournament, declineTournamentApplication } from '@/data-access/tournaments';
+import { applyToTournament, declineTournamentApplication } from '@/data-access/applications';
+import { ConflictError, NotFoundError, UnauthorizedError } from '@/errors/errors';
 import { revalidatePath } from 'next/cache';
 import { redirect } from 'next/navigation';
-import { ConflictError, NotFoundError, UnauthorizedError } from '@/errors/errors';
 
-export interface ApplyToTournamentState {
-    success: boolean;
-    message: string;
+interface ApplicationFormInputs {
+    tournamentId: string;
+    licenseNumber: number;
+    ranking: number;
 }
 
-export async function applyToTournamentAction(
-    _: ApplyToTournamentState,
-    formData: FormData,
-): Promise<ApplyToTournamentState> {
+export interface ApplicationState {
+    success: boolean;
+    message: string;
+    inputs?: ApplicationFormInputs;
+    errors?: Partial<Record<keyof ApplicationFormInputs | '_form', string[]>>;
+}
+
+export async function tournamentApplicationAction(_: ApplicationState, formData: FormData): Promise<ApplicationState> {
     const tournamentId = formData.get('tournamentId') as string | null;
     const participates = formData.get('participates') as string | null;
     if (tournamentId === null || participates === null) {
