@@ -15,7 +15,8 @@
     "db:generate": "dotenv -e .env.local -- pnpx prisma generate",
     "db:push": "dotenv -e .env.local -- pnpx prisma db push",
     "db:migrate": "dotenv -e .env.local -- pnpx prisma migrate dev --name",
-    "db:studio": "dotenv -e .env.local -- pnpx prisma studio"
+    "db:studio": "dotenv -e .env.local -- pnpx prisma studio",
+    "worker:sample": "dotenv -e .env.local -- pnpx tsx --watch src/workers/worker.ts"
   },
   "dependencies": {
     "@emotion/cache": "^11.14.0",
@@ -29,7 +30,9 @@
     "@next/third-parties": "^15.3.3",
     "@prisma/client": "6.5.0",
     "better-auth": "^1.2.5",
+    "bullmq": "^5.53.1",
     "dayjs": "^1.11.13",
+    "ioredis": "^5.6.1",
     "next": "15.2.4",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
