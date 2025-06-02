@@ -121,14 +121,17 @@ model Sponsor {
 }
 
 model Match {
-  id           String     @id @default(uuid(4))
-  date         DateTime
-  tournamentId String
-  tournament   Tournament @relation(fields: [tournamentId], references: [id])
-  player1Id    String
-  player1      User       @relation(fields: [player1Id], references: [id], name: "player1")
-  player2Id    String
-  player2      User       @relation(fields: [player2Id], references: [id], name: "player2")
+  id                 String     @id @default(uuid(4))
+  number             Int        @default(autoincrement())
+  date               DateTime
+  tournamentId       String
+  tournament         Tournament @relation(fields: [tournamentId], references: [id])
+  player1Id          String?
+  player1            User?      @relation(fields: [player1Id], references: [id], name: "player1")
+  player1Description String     @default("")
+  player2Id          String?
+  player2            User?      @relation(fields: [player2Id], references: [id], name: "player2")
+  player2Description String     @default("")
 
   @@map("matches")
 }

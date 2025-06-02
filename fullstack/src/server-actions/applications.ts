@@ -48,8 +48,6 @@ export async function tournamentApplicationAction(_: ApplicationState, formData:
             await applyToTournament(tournamentId, licenseNumber, ranking);
         }
     } catch (error: unknown) {
-        console.error(error);
-
         if (error instanceof UnauthorizedError) {
             redirect(`/auth/sign-in?callback=${encodeURI(`/tournaments/${tournamentId}`)}`);
         }
@@ -59,6 +57,7 @@ export async function tournamentApplicationAction(_: ApplicationState, formData:
         if (error instanceof ConflictError || error instanceof ValidationError) {
             return { success: false, message: error.message };
         }
+        console.error(error);
         return { success: false, message: 'Something went wrong. Try again later.' };
     }
     revalidatePath('/');

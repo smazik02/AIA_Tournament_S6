@@ -10,15 +10,15 @@ async function processTournamentLadder(job: Job<QueuePayload>) {
     );
     console.log(`[WORKER] Simulating ladder generation for tournament ${tournamentId}...`);
 
-    // try {
-    //     await fetch(`http://localhost:3000/api/tournament/generate`, {
-    //         method: 'POST',
-    //         headers: { 'Content-Type': 'application/json' },
-    //         body: JSON.stringify({ tournamentId }),
-    //     });
-    // } catch (error: unknown) {
-    //     console.error(`[WORKER] Error notifying Next.js app for tournament ${tournamentId}:`, error);
-    // }
+    try {
+        await fetch(`http://localhost:3000/api/tournament/generate`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ tournamentId }),
+        });
+    } catch (error: unknown) {
+        console.error(`[WORKER] Error notifying Next.js app for tournament ${tournamentId}:`, error);
+    }
 
     console.log(`[WORKER] Finished processing tournament ID: ${tournamentId}`);
 }

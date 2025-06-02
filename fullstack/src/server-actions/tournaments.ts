@@ -48,10 +48,10 @@ export async function createTournamentAction(_: TournamentState | null, formData
     try {
         newTournament = await createTournament({ ...validationResult.data, organizerId: '' });
     } catch (error: unknown) {
-        console.error(error);
         if (error instanceof UnauthorizedError) {
             redirect(`/auth/sign-in?callback=${encodeURI('/tournament/create')}`);
         }
+        console.error(error);
         return {
             success: false,
             message: 'Something went wrong. Please try again later.',
@@ -93,7 +93,6 @@ export async function updateTournamentAction(_: TournamentState | null, formData
     try {
         await updateTournament(tournamentId, { ...validationResult.data });
     } catch (error: unknown) {
-        console.error(error);
         const toReturn = { success: false, inputs: rawInputs };
 
         if (error instanceof UnauthorizedError) {
@@ -108,6 +107,7 @@ export async function updateTournamentAction(_: TournamentState | null, formData
         if (error instanceof ValidationError) {
             return { ...toReturn, message: error.message };
         }
+        console.error(error);
         return { ...toReturn, message: 'Something went wrong. Please try again later.' };
     }
 

@@ -50,7 +50,6 @@ export async function addTournamentSponsorAction(
     try {
         await addTournamentSponsor(validationResult.data.tournamentId, validationResult.data);
     } catch (error: unknown) {
-        console.error(error);
         if (error instanceof UnauthorizedError) {
             redirect(`/auth/sign-in?callback=${encodeURI(`/tournaments/${validationResult.data.tournamentId}`)}`);
         }
@@ -68,6 +67,7 @@ export async function addTournamentSponsorAction(
                 inputs: rawInputs,
             };
         }
+        console.error(error);
         return {
             success: false,
             message: 'Something went wrong. Please try again later.',
@@ -86,13 +86,13 @@ export async function deleteTournamentSponsorAction(tournamentId: string, sponso
     try {
         await deleteTournamentSponsor(tournamentId, sponsorId);
     } catch (error: unknown) {
-        console.error(error);
         if (error instanceof UnauthorizedError) {
             redirect(`/auth/sign-in?callback=${encodeURI(`/tournaments/${tournamentId}`)}`);
         }
         if (error instanceof NotFoundError) {
             redirect('/');
         }
+        console.error(error);
     } finally {
         revalidatePath(`/tournament/${tournamentId}`);
     }
