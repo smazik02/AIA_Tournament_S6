@@ -1,4 +1,3 @@
-import { Typography } from '@mui/material';
 import SignUpForm from '@/components/auth/SignUpForm';
 import { Metadata } from 'next';
 
@@ -7,14 +6,7 @@ export const metadata: Metadata = {
 };
 
 function SignUp() {
-    return (
-        <>
-            <Typography component="h1" variant="h4" sx={{ width: '100%' }}>
-                Sign up
-            </Typography>
-            <SignUpForm />
-        </>
-    );
+    return <SignUpForm />;
 }
 
 export default SignUp;

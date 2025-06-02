@@ -1,5 +1,4 @@
 import { Metadata } from 'next';
-import { Typography } from '@mui/material';
 import SignInForm from '@/components/auth/SignInForm';
 import { auth } from '@/lib/auth';
 import { headers } from 'next/headers';
@@ -22,14 +21,7 @@ async function SignIn({ searchParams }: SignInPageParams) {
         redirect(`/${callbackUrl}`);
     }
 
-    return (
-        <>
-            <Typography component="h1" variant="h4" sx={{ width: '100%' }}>
-                Sign in
-            </Typography>
-            <SignInForm />
-        </>
-    );
+    return <SignInForm />;
 }
 
 export default SignIn;

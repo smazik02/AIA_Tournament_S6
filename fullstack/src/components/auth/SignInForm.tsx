@@ -10,6 +10,7 @@ import {
     FormControl,
     FormControlLabel,
     Link as MuiLink,
+    SxProps,
     TextField,
     Typography,
 } from '@mui/material';
@@ -20,6 +21,13 @@ import ForgotPasswordDialog from '@/components/auth/ForgotPasswordDialog';
 import { authClient } from '@/lib/auth-client';
 import { useRouter } from 'next/navigation';
 import { MAX_PASSWORD_LENGTH, MIN_PASSWORD_LENGTH } from '@/lib/auth';
+import AuthCard from '@/components/auth/AuthCard';
+import AuthContainer from '@/components/auth/AuthContainer';
+
+const containerStyles: SxProps = {
+    direction: 'column',
+    justifyContent: 'space-between',
+};
 
 function SignInForm() {
     const [emailError, setEmailError] = useState(false);
@@ -100,88 +108,104 @@ function SignInForm() {
     return (
         <>
             <ForgotPasswordDialog isOpen={isResetPasswordOpen} handleClose={() => setIsResetPasswordOpen(false)} />
-            <Box component="form" sx={{ display: 'flex', flexDirection: 'column', gap: 2 }} onSubmit={handleSubmit}>
-                <FormControl>
-                    <TextField
-                        autoComplete="email"
-                        name="email"
-                        label="Email"
-                        fullWidth
-                        id="email"
-                        type="email"
-                        error={emailError}
-                        helperText={emailErrorMessage}
-                        color={emailError ? 'error' : 'primary'}
-                    />
-                </FormControl>
-                <FormControl>
-                    <TextField
-                        autoComplete="new-password"
-                        name="password"
-                        label="Password"
-                        fullWidth
-                        id="password"
-                        type="password"
-                        error={passwordError}
-                        helperText={passwordErrorMessage}
-                        color={passwordError ? 'error' : 'primary'}
-                    />
-                </FormControl>
-                <FormControlLabel
-                    control={
-                        <Checkbox
-                            value="remember"
-                            color="primary"
-                            checked={rememberMe}
-                            onChange={(e) => setRememberMe(e.target.checked)}
-                        />
-                    }
-                    label="Remember me"
-                />
-                <Button type="submit" fullWidth variant="contained">
-                    Sign in
-                </Button>
-                <MuiLink
-                    component="button"
-                    type="button"
-                    variant="body2"
-                    sx={{ alignSelf: 'center' }}
-                    onClick={() => setIsResetPasswordOpen(true)}
-                >
-                    Forgot your password?
-                </MuiLink>
-                <Divider>
-                    <Typography sx={{ color: 'text.secondary' }}>or</Typography>
-                </Divider>
-                <Box
-                    sx={{
-                        display: 'flex',
-                        flexDirection: 'column',
-                        gap: 2,
-                    }}
-                >
-                    <Button
-                        fullWidth
-                        variant="outlined"
-                        onClick={async () => await authClient.signIn.social({ provider: 'google' })}
-                        startIcon={<GoogleIcon />}
-                    >
-                        Sign in with Google
-                    </Button>
-                    <Typography sx={{ textAlign: 'center' }}>
-                        Don&apos;t have an account?{' '}
-                        <MuiLink href="/auth/sign-up" component={NextLink} variant="body2" sx={{ alignSelf: 'center' }}>
-                            Sign up
-                        </MuiLink>
+            <AuthContainer sx={containerStyles}>
+                <AuthCard variant="outlined">
+                    <Typography component="h1" variant="h4" sx={{ width: '100%' }}>
+                        Sign in
                     </Typography>
-                </Box>
-                {authError && (
-                    <Alert severity="error">
-                        <AlertTitle>Error occurred during sign in!</AlertTitle>
-                        {authErrorMessage}
-                    </Alert>
-                )}
-            </Box>
+                    <Box
+                        component="form"
+                        sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}
+                        onSubmit={handleSubmit}
+                    >
+                        <FormControl>
+                            <TextField
+                                autoComplete="email"
+                                name="email"
+                                label="Email"
+                                fullWidth
+                                id="email"
+                                type="email"
+                                error={emailError}
+                                helperText={emailErrorMessage}
+                                color={emailError ? 'error' : 'primary'}
+                            />
+                        </FormControl>
+                        <FormControl>
+                            <TextField
+                                autoComplete="new-password"
+                                name="password"
+                                label="Password"
+                                fullWidth
+                                id="password"
+                                type="password"
+                                error={passwordError}
+                                helperText={passwordErrorMessage}
+                                color={passwordError ? 'error' : 'primary'}
+                            />
+                        </FormControl>
+                        <FormControlLabel
+                            control={
+                                <Checkbox
+                                    value="remember"
+                                    color="primary"
+                                    checked={rememberMe}
+                                    onChange={(e) => setRememberMe(e.target.checked)}
+                                />
+                            }
+                            label="Remember me"
+                        />
+                        <Button type="submit" fullWidth variant="contained">
+                            Sign in
+                        </Button>
+                        <MuiLink
+                            component="button"
+                            type="button"
+                            variant="body2"
+                            sx={{ alignSelf: 'center' }}
+                            onClick={() => setIsResetPasswordOpen(true)}
+                        >
+                            Forgot your password?
+                        </MuiLink>
+                        <Divider>
+                            <Typography sx={{ color: 'text.secondary' }}>or</Typography>
+                        </Divider>
+                        <Box
+                            sx={{
+                                display: 'flex',
+                                flexDirection: 'column',
+                                gap: 2,
+                            }}
+                        >
+                            <Button
+                                fullWidth
+                                variant="outlined"
+                                onClick={async () => await authClient.signIn.social({ provider: 'google' })}
+                                startIcon={<GoogleIcon />}
+                            >
+                                Sign in with Google
+                            </Button>
+                            <Typography sx={{ textAlign: 'center' }}>
+                                Don&apos;t have an account?{' '}
+                                <MuiLink
+                                    href="/auth/sign-up"
+                                    component={NextLink}
+                                    variant="body2"
+                                    sx={{ alignSelf: 'center' }}
+                                >
+                                    Sign up
+                                </MuiLink>
+                            </Typography>
+                        </Box>
+                        {authError && (
+                            <Alert severity="error">
+                                <AlertTitle>Error occurred during sign in!</AlertTitle>
+                                {authErrorMessage}
+                            </Alert>
+                        )}
+                    </Box>
+                </AuthCard>
+            </AuthContainer>
         </>
     );
 }

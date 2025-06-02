@@ -8,6 +8,7 @@ import {
     Divider,
     FormControl,
     Link as MuiLink,
+    SxProps,
     TextField,
     Typography,
 } from '@mui/material';
@@ -16,6 +17,13 @@ import NextLink from 'next/link';
 import { FormEvent, useState } from 'react';
 import { authClient } from '@/lib/auth-client';
 import { MAX_PASSWORD_LENGTH, MIN_PASSWORD_LENGTH } from '@/lib/auth';
+import AuthContainer from '@/components/auth/AuthContainer';
+import AuthCard from '@/components/auth/AuthCard';
+
+const containerStyles: SxProps = {
+    direction: 'column',
+    justifyContent: 'space-between',
+};
 
 function SignUpForm() {
     const [nameError, setNameError] = useState(false);
@@ -108,81 +116,93 @@ function SignUpForm() {
     }
 
     return (
-        <Box component="form" sx={{ display: 'flex', flexDirection: 'column', gap: 2 }} onSubmit={handleSubmit}>
-            <FormControl>
-                <TextField
-                    autoComplete="name"
-                    name="name"
-                    label="Name"
-                    fullWidth
-                    id="name"
-                    type="text"
-                    error={nameError}
-                    helperText={nameErrorMessage}
-                    color={nameError ? 'error' : 'primary'}
-                />
-            </FormControl>
-            <FormControl>
-                <TextField
-                    autoComplete="email"
-                    name="email"
-                    label="Email"
-                    fullWidth
-                    id="email"
-                    type="email"
-                    error={emailError}
-                    helperText={emailErrorMessage}
-                    color={emailError ? 'error' : 'primary'}
-                />
-            </FormControl>
-            <FormControl>
-                <TextField
-                    autoComplete="new-password"
-                    name="password"
-                    label="Password"
-                    fullWidth
-                    id="password"
-                    type="password"
-                    error={passwordError}
-                    helperText={passwordErrorMessage}
-                    color={passwordError ? 'error' : 'primary'}
-                />
-            </FormControl>
-            <Button type="submit" fullWidth variant="contained">
-                Sign up
-            </Button>
-            <Divider>
-                <Typography sx={{ color: 'text.secondary' }}>or</Typography>
-            </Divider>
-            <Box
-                sx={{
-                    display: 'flex',
-                    flexDirection: 'column',
-                    gap: 2,
-                }}
-            >
-                <Button
-                    fullWidth
-                    variant="outlined"
-                    onClick={async () => await authClient.signIn.social({ provider: 'google' })}
-                    startIcon={<GoogleIcon />}
-                >
-                    Sign in with Google
-                </Button>
-                <Typography sx={{ textAlign: 'center' }}>
-                    Already have an account?{' '}
-                    <MuiLink href="/auth/sign-in" component={NextLink} variant="body2" sx={{ alignSelf: 'center' }}>
-                        Sign in
-                    </MuiLink>
+        <AuthContainer sx={containerStyles}>
+            <AuthCard variant="outlined">
+                <Typography component="h1" variant="h4" sx={{ width: '100%' }}>
+                    Sign up
                 </Typography>
-            </Box>
-            {authError && (
-                <Alert severity="error">
-                    <AlertTitle>Error occurred during sign up!</AlertTitle>
-                    {authErrorMessage}
-                </Alert>
-            )}
-        </Box>
+                <Box component="form" sx={{ display: 'flex', flexDirection: 'column', gap: 2 }} onSubmit={handleSubmit}>
+                    <FormControl>
+                        <TextField
+                            autoComplete="name"
+                            name="name"
+                            label="Name"
+                            fullWidth
+                            id="name"
+                            type="text"
+                            error={nameError}
+                            helperText={nameErrorMessage}
+                            color={nameError ? 'error' : 'primary'}
+                        />
+                    </FormControl>
+                    <FormControl>
+                        <TextField
+                            autoComplete="email"
+                            name="email"
+                            label="Email"
+                            fullWidth
+                            id="email"
+                            type="email"
+                            error={emailError}
+                            helperText={emailErrorMessage}
+                            color={emailError ? 'error' : 'primary'}
+                        />
+                    </FormControl>
+                    <FormControl>
+                        <TextField
+                            autoComplete="new-password"
+                            name="password"
+                            label="Password"
+                            fullWidth
+                            id="password"
+                            type="password"
+                            error={passwordError}
+                            helperText={passwordErrorMessage}
+                            color={passwordError ? 'error' : 'primary'}
+                        />
+                    </FormControl>
+                    <Button type="submit" fullWidth variant="contained">
+                        Sign up
+                    </Button>
+                    <Divider>
+                        <Typography sx={{ color: 'text.secondary' }}>or</Typography>
+                    </Divider>
+                    <Box
+                        sx={{
+                            display: 'flex',
+                            flexDirection: 'column',
+                            gap: 2,
+                        }}
+                    >
+                        <Button
+                            fullWidth
+                            variant="outlined"
+                            onClick={async () => await authClient.signIn.social({ provider: 'google' })}
+                            startIcon={<GoogleIcon />}
+                        >
+                            Sign in with Google
+                        </Button>
+                        <Typography sx={{ textAlign: 'center' }}>
+                            Already have an account?{' '}
+                            <MuiLink
+                                href="/auth/sign-in"
+                                component={NextLink}
+                                variant="body2"
+                                sx={{ alignSelf: 'center' }}
+                            >
+                                Sign in
+                            </MuiLink>
+                        </Typography>
+                    </Box>
+                    {authError && (
+                        <Alert severity="error">
+                            <AlertTitle>Error occurred during sign up!</AlertTitle>
+                            {authErrorMessage}
+                        </Alert>
+                    )}
+                </Box>
+            </AuthCard>
+        </AuthContainer>
     );
 }
 
