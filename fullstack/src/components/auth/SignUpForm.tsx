@@ -17,8 +17,8 @@ import NextLink from 'next/link';
 import { FormEvent, useState } from 'react';
 import { authClient } from '@/lib/auth-client';
 import { MAX_PASSWORD_LENGTH, MIN_PASSWORD_LENGTH } from '@/lib/auth';
-import AuthContainer from '@/components/auth/AuthContainer';
-import AuthCard from '@/components/auth/AuthCard';
+import FormContainer from '@/components/form/FormContainer';
+import FormCard from '@/components/form/FormCard';
 
 const containerStyles: SxProps = {
     direction: 'column',
@@ -116,8 +116,8 @@ function SignUpForm() {
     }
 
     return (
-        <AuthContainer sx={containerStyles}>
-            <AuthCard variant="outlined">
+        <FormContainer sx={containerStyles}>
+            <FormCard variant="outlined">
                 <Typography component="h1" variant="h4" sx={{ width: '100%' }}>
                     Sign up
                 </Typography>
@@ -201,8 +201,8 @@ function SignUpForm() {
                         </Alert>
                     )}
                 </Box>
-            </AuthCard>
-        </AuthContainer>
+            </FormCard>
+        </FormContainer>
     );
 }
 

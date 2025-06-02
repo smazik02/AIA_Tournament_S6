@@ -3,7 +3,7 @@
 import { styled } from '@mui/material/styles';
 import { Card } from '@mui/material';
 
-const AuthCard = styled(Card)(({ theme }) => ({
+const FormCard = styled(Card)(({ theme }) => ({
     display: 'flex',
     flexDirection: 'column',
     alignSelf: 'center',
@@ -16,4 +16,4 @@ const AuthCard = styled(Card)(({ theme }) => ({
     },
 }));
 
-export default AuthCard;
+export default FormCard;

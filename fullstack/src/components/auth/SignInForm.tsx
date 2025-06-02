@@ -21,8 +21,8 @@ import ForgotPasswordDialog from '@/components/auth/ForgotPasswordDialog';
 import { authClient } from '@/lib/auth-client';
 import { useRouter } from 'next/navigation';
 import { MAX_PASSWORD_LENGTH, MIN_PASSWORD_LENGTH } from '@/lib/auth';
-import AuthCard from '@/components/auth/AuthCard';
-import AuthContainer from '@/components/auth/AuthContainer';
+import FormCard from '@/components/form/FormCard';
+import FormContainer from '@/components/form/FormContainer';
 
 const containerStyles: SxProps = {
     direction: 'column',
@@ -108,8 +108,8 @@ function SignInForm() {
     return (
         <>
             <ForgotPasswordDialog isOpen={isResetPasswordOpen} handleClose={() => setIsResetPasswordOpen(false)} />
-            <AuthContainer sx={containerStyles}>
-                <AuthCard variant="outlined">
+            <FormContainer sx={containerStyles}>
+                <FormCard variant="outlined">
                     <Typography component="h1" variant="h4" sx={{ width: '100%' }}>
                         Sign in
                     </Typography>
@@ -204,8 +204,8 @@ function SignInForm() {
                             </Alert>
                         )}
                     </Box>
-                </AuthCard>
-            </AuthContainer>
+                </FormCard>
+            </FormContainer>
         </>
     );
 }
