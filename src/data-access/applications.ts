@@ -3,14 +3,14 @@
 import { ConflictError, NotFoundError, UnauthorizedError, ValidationError } from '@/errors/errors';
 import { auth } from '@/lib/auth';
 import prisma from '@/lib/prisma';
-import { Prisma, TournamentParticipants } from '@prisma/client';
+import { Prisma, TournamentParticipant } from '@prisma/client';
 import { headers } from 'next/headers';
 
-export async function getTournamentApplication(tournamentId: string): Promise<TournamentParticipants | null> {
+export async function getTournamentApplication(tournamentId: string): Promise<TournamentParticipant | null> {
     const session = await auth.api.getSession({ headers: await headers() });
     if (!session) return null;
 
-    return prisma.tournamentParticipants.findFirst({ where: { id: session.user.id, tournamentId } });
+    return prisma.tournamentParticipant.findFirst({ where: { id: session.user.id, tournamentId } });
 }
 
 export async function applyToTournament(
@@ -50,7 +50,7 @@ export async function applyToTournament(
             throw new ConflictError(`User already applied for the tournament.`);
         }
 
-        const newParticipation: Prisma.TournamentParticipantsUncheckedCreateInput = {
+        const newParticipation: Prisma.TournamentParticipantUncheckedCreateInput = {
             licenseNumber,
             ranking,
             userId,
@@ -58,7 +58,7 @@ export async function applyToTournament(
         };
 
         try {
-            await tx.tournamentParticipants.create({ data: newParticipation });
+            await tx.tournamentParticipant.create({ data: newParticipation });
         } catch (error: unknown) {
             if (error instanceof Prisma.PrismaClientKnownRequestError && error.code === 'P2002') {
                 throw new ConflictError('Ranking or license number are not unique.');
@@ -86,11 +86,11 @@ export async function declineTournamentApplication(id: string) {
         }
 
         const userId = session.user.id;
-        const existingRegistration = await tx.tournamentParticipants.findFirst({ where: { userId, tournamentId: id } });
+        const existingRegistration = await tx.tournamentParticipant.findFirst({ where: { userId, tournamentId: id } });
         if (existingRegistration === null) {
             throw new ConflictError(`User is not participating in the tournament.`);
         }
 
-        await tx.tournamentParticipants.delete({ where: { id: existingRegistration.id } });
+        await tx.tournamentParticipant.delete({ where: { id: existingRegistration.id } });
     });
 }
