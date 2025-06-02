@@ -1,3 +1,8 @@
+# Directories
+
+- **workers** - worker queue utilizing Redis and BullMQ to enqueue scheduled tasks (tournament ladder generation)
+- **fullstack** - the webapp itself with a PostgreSQL database
+
 # Running
 
 ### You'll need:
@@ -8,6 +13,13 @@
 
 ### To run the project for the first time:
 
+#### In the workers directory
+- run `pnpm i` to install all dependencies
+- run `pnpn db:up` to run the Redis cache (it'll fail if you don't have Docker Engine running)
+- run `pnpm dev` to serve the app in the dev mode
+- alternatively run `pnpm start` to build with tsc and run with node
+
+#### In the fullstack directory
 - run `pnpm init-env` to install all dependencies and create required .env files
 - fill out the .env files as instructed (they include things like db connection string, authentication library secret,
   etc.)
@@ -82,7 +94,7 @@ encounters
 - PostgreSQL database
 - Prisma ORM
 - BetterAuth authentication library
-- Resend mail service (+ maybe React Mail for emails)
+- Email.JS for mailing
 
 # Database schema
 
@@ -137,19 +149,3 @@ encounters
 
 - tournament id => Tournament
 - sponsor id => Sponsor
-
-# Required pages
-
-- **/** - Main page, paged list of upcoming tournaments, available even if the user is not logged in
-- **/login** - Login page
-- **/register** - Register page
-- **/email/\[email_id\]** - Email confirmation page
-- **/password** - Password reset request page
-- **/password/\[password_id\]** - Password reset page
-- **/tournament/new** - Organizing a new tournament
-- **/tournament/\[tournament_id\]** - Tournament, detailed page for a tournament (tournament data, participate option,
-  edit option to organizers, tournament ladder after it begins)
-- **/tournament/\[tournament_id\]/signup** - Signup page for the tournament
-- **/tournament/\[tournament_id\]/form** - Tournament form, editing (only for the organizer)
-- **/result/\[result_id\]** - Result form, inputting the match result
-- **/user/\[user_id\]** - User page, upcoming games and tournaments for which they've registered
