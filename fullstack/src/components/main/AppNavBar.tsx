@@ -37,6 +37,11 @@ function AppNavBar() {
         });
     };
 
+    const handleProfileInfo = () => {
+        handleClose();
+        router.push('/account');
+    };
+
     return (
         <Box sx={{ flexGrow: 1 }}>
             <AppBar position="sticky">
@@ -61,7 +66,7 @@ function AppNavBar() {
                             onClose={handleClose}
                         >
                             {session && [
-                                <MenuItem key={1} onClick={handleClose}>
+                                <MenuItem key={1} onClick={handleProfileInfo}>
                                     Profile info
                                 </MenuItem>,
                                 <MenuItem key={2} onClick={handleLogout}>

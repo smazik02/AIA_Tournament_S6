@@ -3,14 +3,25 @@
 import prisma from '@/lib/prisma';
 import { ConflictError, NotFoundError } from '@/errors/errors';
 import { Prisma } from '@prisma/client';
+import { auth } from '@/lib/auth';
+import { headers } from 'next/headers';
+import { redirect } from 'next/navigation';
 
 interface PlayerInfo {
     userId?: string;
     description?: string;
 }
 
+export type MatchWithTournament = Prisma.MatchGetPayload<{
+    include: {
+        tournament: true;
+        player1: { select: { id: true; name: true } };
+        player2: { select: { id: true; name: true } };
+    };
+}>;
+
 export async function generateTournamentLadder(tournamentId: string): Promise<void> {
-    prisma.$transaction(async (tx) => {
+    await prisma.$transaction(async (tx) => {
         const tournament = await tx.tournament.findUnique({
             where: { id: tournamentId },
             include: {
@@ -93,5 +104,22 @@ export async function generateTournamentLadder(tournamentId: string): Promise<vo
             }
             currentRoundPlayerInfos = nextRoundPlayerInfos;
         }
+    });
+}
+
+export async function getAllPlayerMatches(): Promise<MatchWithTournament[]> {
+    const session = await auth.api.getSession({ headers: await headers() });
+    if (!session) {
+        redirect('/auth/sign-in');
+    }
+
+    const userId = session.user.id;
+    return prisma.match.findMany({
+        where: { OR: [{ player1Id: userId }, { player2Id: userId }] },
+        include: {
+            tournament: true,
+            player1: { select: { id: true, name: true } },
+            player2: { select: { id: true, name: true } },
+        },
     });
 }
