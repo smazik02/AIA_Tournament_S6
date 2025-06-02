@@ -196,6 +196,11 @@ function SignInForm() {
                                     Sign up
                                 </MuiLink>
                             </Typography>
+                            <Typography sx={{ textAlign: 'center' }}>
+                                <MuiLink href="/" component={NextLink} variant="body2" sx={{ alignSelf: 'center' }}>
+                                    Go back to home
+                                </MuiLink>
+                            </Typography>
                         </Box>
                         {authError && (
                             <Alert severity="error">

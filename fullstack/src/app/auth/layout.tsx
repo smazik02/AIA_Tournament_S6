@@ -1,5 +1,4 @@
 import { ReactNode } from 'react';
-import AppNavBar from '@/components/main/AppNavBar';
 import { Stack, SxProps } from '@mui/material';
 
 export interface AuthLayoutProps {
@@ -9,12 +8,7 @@ export interface AuthLayoutProps {
 const mainStackStyles: SxProps = { justifyContent: 'center' };
 
 function AuthLayout({ children }: AuthLayoutProps) {
-    return (
-        <>
-            <AppNavBar />
-            <Stack sx={mainStackStyles}>{children}</Stack>
-        </>
-    );
+    return <Stack sx={mainStackStyles}>{children}</Stack>;
 }
 
 export default AuthLayout;

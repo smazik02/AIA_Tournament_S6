@@ -22,7 +22,7 @@ function NewTournamentPage() {
 
     return (
         <LocalizationProvider dateAdapter={AdapterDayjs}>
-            <FormContainer sx={{ direction: 'column', justifyContent: 'space-between' }}>
+            <FormContainer sx={{ direction: 'column', justifyContent: 'space-between', height: 'auto' }}>
                 <FormCard variant="outlined">
                     <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
                         <Form action={formAction}>
