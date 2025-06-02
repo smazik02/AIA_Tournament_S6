@@ -4,7 +4,7 @@ import prisma from '@/lib/prisma';
 import { auth } from '@/lib/auth';
 import { headers } from 'next/headers';
 import { Prisma, Tournament } from '@prisma/client';
-import { ForbiddenError, NotFoundError, UnauthorizedError, ValidationError } from '@/errors/errors';
+import { ConflictError, ForbiddenError, NotFoundError, UnauthorizedError, ValidationError } from '@/errors/errors';
 
 interface PaginationInfo {
     skip: number;
@@ -37,7 +37,22 @@ export async function createTournament(tournament: Prisma.TournamentUncheckedCre
     }
 
     const organizerId = session.user.id;
-    return prisma.tournament.create({ data: { ...tournament, organizerId } });
+    const newTournament = await prisma.tournament.create({ data: { ...tournament, organizerId } });
+
+    const res = await fetch(`http://localhost:3001/api/tournament`, {
+        method: 'POST',
+        body: JSON.stringify({
+            tournamentId: newTournament.id,
+            applicationDeadline: newTournament.applicationDeadline.toISOString(),
+        }),
+        headers: { 'Content-Type': 'application/json' },
+    });
+    if (res.status !== 202) {
+        const body = await res.json();
+        throw new ConflictError(body.message ?? 'Something went wrong. Please try again later.');
+    }
+
+    return newTournament;
 }
 
 export async function updateTournament(id: string, updatedFields: Prisma.TournamentUpdateInput): Promise<Tournament> {
@@ -83,6 +98,23 @@ export async function updateTournament(id: string, updatedFields: Prisma.Tournam
             }
         }
 
-        return tx.tournament.update({ where: { id }, data: updatedFields });
+        const updatedTournament = tx.tournament.update({ where: { id }, data: updatedFields });
+
+        if (updatedFields.applicationDeadline !== undefined) {
+            const res = await fetch(`http://localhost:3001/api/tournament`, {
+                method: 'POST',
+                body: JSON.stringify({
+                    tournamentId: tournament.id,
+                    applicationDeadline: updatedFields.applicationDeadline,
+                }),
+                headers: { 'Content-Type': 'application/json' },
+            });
+            if (res.status !== 202) {
+                const body = await res.json();
+                throw new ConflictError(body.message ?? 'Something went wrong. Please try again later.');
+            }
+        }
+
+        return updatedTournament;
     });
 }
