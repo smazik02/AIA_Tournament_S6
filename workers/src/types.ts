@@ -1,4 +1,4 @@
 export interface QueuePayload {
     tournamentId: string;
-    applicationDeadline: string; // ISO string
+    applicationDeadline: string;
 }

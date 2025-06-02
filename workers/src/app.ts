@@ -7,13 +7,13 @@ const app = express();
 app.use(bodyParser.json());
 initializeBullMqWorker();
 
-app.get('/health', (req, res) => {
+app.get('/health', (_req, res) => {
     res.status(200).send('Worker app is healthy.');
 });
 
 app.use('/api', router);
 
-app.use((err: Error, req: Request, res: Response, next: NextFunction) => {
+app.use((err: Error, _req: Request, res: Response, _: NextFunction) => {
     console.error('Unhandled error:', err.stack);
     res.status(500).send('Something broke!');
 });

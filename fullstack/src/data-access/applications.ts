@@ -3,15 +3,8 @@
 import { ConflictError, NotFoundError, UnauthorizedError, ValidationError } from '@/errors/errors';
 import { auth } from '@/lib/auth';
 import prisma from '@/lib/prisma';
-import { Prisma, TournamentParticipant } from '@prisma/client';
+import { Prisma } from '@prisma/client';
 import { headers } from 'next/headers';
-
-export async function getTournamentApplication(tournamentId: string): Promise<TournamentParticipant | null> {
-    const session = await auth.api.getSession({ headers: await headers() });
-    if (!session) return null;
-
-    return prisma.tournamentParticipant.findFirst({ where: { id: session.user.id, tournamentId } });
-}
 
 export async function applyToTournament(
     id: string,
