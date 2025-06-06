@@ -5,9 +5,9 @@
   "scripts": {
     "init-env": "pnpm install && cp .env .env.local && echo Fill out .env.local before proceeding with db:init",
     "dev": "next dev",
-    "build": "next build",
+    "build": "next build && cp -r .next/static .next/standalone/.next/",
     "build:dev": "dotenv -e .env.local -- pnpm build",
-    "start": "next start",
+    "start": "HOSTNAME=0.0.0.0 dotenv -e .env.local -- node .next/standalone/server.js",
     "lint": "next lint",
     "format": "prettier . --write",
     "format:check": "prettier . --check",
