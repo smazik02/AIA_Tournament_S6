@@ -112,7 +112,15 @@ function SignUpForm() {
     };
 
     if (afterSignUp) {
-        return <>A verification mail has been sent. Please verify your email before signing in.</>;
+        return (
+            <FormContainer sx={containerStyles}>
+                <FormCard variant="outlined">
+                    <Typography variant="h5" sx={{ textAlign: 'center' }}>
+                        A verification mail has been sent. Please verify your email before signing in.
+                    </Typography>
+                </FormCard>
+            </FormContainer>
+        );
     }
 
     return (
