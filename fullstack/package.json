@@ -27,7 +27,7 @@
     "@mui/material-nextjs": "^7.0.0",
     "@mui/x-date-pickers": "^8.3.1",
     "@next/third-parties": "^15.3.3",
-    "@prisma/client": "6.5.0",
+    "@prisma/client": "^6.9.0",
     "better-auth": "^1.2.5",
     "dayjs": "^1.11.13",
     "next": "15.2.4",
@@ -46,7 +46,7 @@
     "eslint-config-next": "15.2.4",
     "eslint-plugin-react-hooks": "^5.2.0",
     "prettier": "3.5.3",
-    "prisma": "^6.5.0",
+    "prisma": "^6.9.0",
     "tsx": "^4.19.3",
     "typescript": "^5"
   }
