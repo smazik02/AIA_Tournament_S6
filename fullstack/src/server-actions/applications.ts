@@ -49,7 +49,7 @@ export async function tournamentApplicationAction(_: ApplicationState, formData:
         }
     } catch (error: unknown) {
         if (error instanceof UnauthorizedError) {
-            redirect(`/auth/sign-in?callback=${encodeURI(`/tournaments/${tournamentId}`)}`);
+            redirect(`/auth/sign-in?callback=${encodeURIComponent(`/tournament/${tournamentId}`)}`);
         }
         if (error instanceof NotFoundError) {
             redirect('/');

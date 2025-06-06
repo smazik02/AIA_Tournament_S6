@@ -49,7 +49,7 @@ export async function createTournamentAction(_: TournamentState | null, formData
         newTournament = await createTournament({ ...validationResult.data, organizerId: '' });
     } catch (error: unknown) {
         if (error instanceof UnauthorizedError) {
-            redirect(`/auth/sign-in?callback=${encodeURI('/tournament/create')}`);
+            redirect(`/auth/sign-in?callback=${encodeURIComponent('/tournament/create')}`);
         }
         console.error(error);
         return {
@@ -96,7 +96,7 @@ export async function updateTournamentAction(_: TournamentState | null, formData
         const toReturn = { success: false, inputs: rawInputs };
 
         if (error instanceof UnauthorizedError) {
-            redirect(`/auth/sign-in?callback=${encodeURI('/tournaments/update')}`);
+            redirect(`/auth/sign-in?callback=${encodeURIComponent('/tournament/update')}`);
         }
         if (error instanceof ForbiddenError) {
             return { ...toReturn, message: 'You do not have permission to update this tournament.' };

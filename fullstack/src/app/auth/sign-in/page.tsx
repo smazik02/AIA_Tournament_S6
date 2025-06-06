@@ -17,8 +17,8 @@ async function SignIn({ searchParams }: SignInPageParams) {
         headers: await headers(),
     });
     if (session) {
-        const callbackUrl = (await searchParams).callback ?? '';
-        redirect(`/${callbackUrl}`);
+        const callbackUrl = (await searchParams).callback;
+        redirect(callbackUrl === undefined ? '/' : `${callbackUrl}`);
     }
 
     return <SignInForm />;

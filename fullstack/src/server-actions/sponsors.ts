@@ -51,7 +51,9 @@ export async function addTournamentSponsorAction(
         await addTournamentSponsor(validationResult.data.tournamentId, validationResult.data);
     } catch (error: unknown) {
         if (error instanceof UnauthorizedError) {
-            redirect(`/auth/sign-in?callback=${encodeURI(`/tournaments/${validationResult.data.tournamentId}`)}`);
+            redirect(
+                `/auth/sign-in?callback=${encodeURIComponent(`/tournament/${validationResult.data.tournamentId}`)}`,
+            );
         }
         if (error instanceof ForbiddenError) {
             return {
@@ -87,7 +89,7 @@ export async function deleteTournamentSponsorAction(tournamentId: string, sponso
         await deleteTournamentSponsor(tournamentId, sponsorId);
     } catch (error: unknown) {
         if (error instanceof UnauthorizedError) {
-            redirect(`/auth/sign-in?callback=${encodeURI(`/tournaments/${tournamentId}`)}`);
+            redirect(`/auth/sign-in?callback=${encodeURIComponent(`/tournament/${tournamentId}`)}`);
         }
         if (error instanceof NotFoundError) {
             redirect('/');

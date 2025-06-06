@@ -5,6 +5,8 @@ import { HowToReg, PersonRemove } from '@mui/icons-material';
 import { Alert, Box, Button, FormControl, Modal, Stack, TextField } from '@mui/material';
 import Form from 'next/form';
 import { useActionState, useState } from 'react';
+import { authClient } from '@/lib/auth-client';
+import { useRouter } from 'next/navigation';
 
 interface ApplyToTournamentButtonProps {
     tournamentId: string;
@@ -48,6 +50,19 @@ function ApplyToTournamentForm({ tournamentId, participates, pastDate }: ApplyTo
 
     const [isOpen, setIsOpen] = useState(false);
 
+    const session = authClient.useSession();
+
+    const router = useRouter();
+
+    const handleOpen = () => {
+        if (session.data === null) {
+            router.push(`/auth/sign-in?callback=${encodeURIComponent(`/tournament/${tournamentId}`)}`);
+            return;
+        }
+
+        setIsOpen(true);
+    };
+
     const handleClose = () => {
         setIsOpen(false);
     };
@@ -58,7 +73,8 @@ function ApplyToTournamentForm({ tournamentId, participates, pastDate }: ApplyTo
                 <Button
                     variant={participates ? 'outlined' : 'contained'}
                     startIcon={participates ? <PersonRemove /> : <HowToReg />}
-                    onClick={() => setIsOpen(true)}
+                    onClick={handleOpen}
+                    disabled={session.isPending || pastDate}
                 >
                     {participates ? 'Decline application' : 'Apply to participate'}
                 </Button>
