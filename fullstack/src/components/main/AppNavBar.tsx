@@ -1,11 +1,12 @@
 'use client';
 
-import { AppBar, Box, IconButton, Menu, MenuItem, Toolbar, Typography } from '@mui/material';
+import { AppBar, Avatar, Box, IconButton, Menu, MenuItem, Toolbar, Typography } from '@mui/material';
 import NextLink from 'next/link';
 import { authClient } from '@/lib/auth-client';
-import { AccountCircle, AccountCircleOutlined } from '@mui/icons-material';
+import { AccountCircleOutlined } from '@mui/icons-material';
 import { MouseEvent, useState } from 'react';
 import { usePathname, useRouter } from 'next/navigation';
+import { stringAvatar } from '../avatar.utils';
 
 function AppNavBar() {
     const { data: session } = authClient.useSession();
@@ -56,7 +57,15 @@ function AppNavBar() {
                     </Typography>
                     <div>
                         <IconButton size="large" color="inherit" onClick={handleMenu}>
-                            {session ? <AccountCircle /> : <AccountCircleOutlined />}
+                            {session ? (
+                                session.user.image !== null ? (
+                                    <Avatar alt={session.user.name} src={session.user.image} />
+                                ) : (
+                                    <Avatar alt={session.user.name} {...stringAvatar(session.user.name)} />
+                                )
+                            ) : (
+                                <AccountCircleOutlined fontSize="large" />
+                            )}
                         </IconButton>
                         <Menu
                             id="account-menu"

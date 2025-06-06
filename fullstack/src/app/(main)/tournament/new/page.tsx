@@ -2,7 +2,7 @@
 
 import { Alert, Box, Button, FormControl, Stack, TextField } from '@mui/material';
 import Form from 'next/form';
-import { useActionState, useState } from 'react';
+import { useActionState, useEffect, useState } from 'react';
 import { DateTimePicker, LocalizationProvider } from '@mui/x-date-pickers';
 import dayjs from 'dayjs';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
@@ -19,6 +19,10 @@ function NewTournamentPage() {
     const [state, formAction, isPending] = useActionState(createTournamentAction, initialState);
     const [tournamentTimeError, setTournamentTimeError] = useState<string | null>('');
     const [applicationDeadlineError, setApplicationDeadlineError] = useState<string | null>('');
+
+    useEffect(() => {
+        document.title = 'Create tournament';
+    }, []);
 
     return (
         <LocalizationProvider dateAdapter={AdapterDayjs}>

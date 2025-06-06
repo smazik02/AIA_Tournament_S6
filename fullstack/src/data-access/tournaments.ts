@@ -30,6 +30,10 @@ export async function getTournament(id: string): Promise<TournamentFull | null> 
     });
 }
 
+export async function getTournamentParticipants(id: string) {
+    return prisma.tournamentParticipant.findMany({ include: { user: true }, where: { tournamentId: id } });
+}
+
 export async function createTournament(tournament: Prisma.TournamentUncheckedCreateInput): Promise<Tournament> {
     const session = await auth.api.getSession({ headers: await headers() });
     if (!session) {

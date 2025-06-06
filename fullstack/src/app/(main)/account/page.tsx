@@ -3,6 +3,7 @@ import { headers } from 'next/headers';
 import { redirect } from 'next/navigation';
 import { Card, CardContent, Container, List, ListItem, Paper, Typography } from '@mui/material';
 import { getAllPlayerMatches, MatchWithTournament } from '@/data-access/matches';
+import { Metadata } from 'next';
 
 function getOpponentDisplay(match: MatchWithTournament, currentUserId: string): string {
     const opponentIsPlayer1 = match.player2Id === currentUserId;
@@ -30,6 +31,10 @@ function getOpponentDisplay(match: MatchWithTournament, currentUserId: string): 
 
     return 'Opponent not yet determined';
 }
+
+export const metadata: Metadata = {
+    title: 'Account Information',
+};
 
 async function AccountPage() {
     const session = await auth.api.getSession({ headers: await headers() });

@@ -1,10 +1,10 @@
 'use client';
 
 import { addTournamentSponsorAction, TournamentSponsorState } from '@/server-actions/sponsors';
+import { Add, AddBusiness } from '@mui/icons-material';
 import { useActionState, useState } from 'react';
 import { Alert, Box, Button, FormControl, Modal, Stack, TextField } from '@mui/material';
 import Form from 'next/form';
-import { AddBusiness } from '@mui/icons-material';
 
 interface AddSponsorModalProps {
     tournamentId: string;
@@ -72,8 +72,8 @@ function AddSponsorModal({ tournamentId }: AddSponsorModalProps) {
                                     color={state?.errors?.logoUrl ? 'error' : 'primary'}
                                 />
 
-                                <Button variant="contained" type="submit" disabled={isPending}>
-                                    {isPending ? 'Creating...' : 'Create'}
+                                <Button variant="contained" startIcon={<Add />} type="submit" disabled={isPending}>
+                                    {isPending ? 'Adding...' : 'Add'}
                                 </Button>
 
                                 {state.message && !state.success && <Alert severity="error">{state.message}</Alert>}

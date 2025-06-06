@@ -24,53 +24,75 @@ async function Home({ searchParams }: HomePageProps) {
 
     return (
         <Container sx={{ display: 'flex', flexDirection: 'column', padding: 2, gap: 3 }}>
-            <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', width: '100%', mb: 2 }}>
-                <CreateTournamentButton />
-                {totalTournaments > 0 && totalPages > 1 && (
+            <CreateTournamentButton />
+
+            {totalTournaments > 0 && totalPages > 1 && (
+                <Box
+                    sx={{
+                        display: 'flex',
+                        justifyContent: 'space-between',
+                        alignItems: 'center',
+                        width: '100%',
+                        mb: 2,
+                    }}
+                >
                     <TournamentPagination count={totalPages} page={currentPage} take={take} />
-                )}
-            </Box>
+                </Box>
+            )}
 
             {tournaments.length === 0 ? (
-                <Typography variant="h6" sx={{ textAlign: 'center', mt: 5 }}>
+                <Typography variant="h6" sx={{ textAlign: 'center', m: 3 }}>
                     No tournaments found.
                 </Typography>
             ) : (
-                <Grid container spacing={3}>
-                    {tournaments.map((tournament) => (
-                        <Grid columns={{ xs: 12, sm: 6, md: 4 }} key={tournament.id}>
-                            <Card sx={{ height: '100%', display: 'flex', flexDirection: 'column' }}>
-                                <CardActionArea
-                                    component={Link}
-                                    href={`/tournament/${tournament.id}`}
-                                    sx={{ flexGrow: 1, display: 'flex', flexDirection: 'column' }}
+                <>
+                    <Typography variant="h4" sx={{ textAlign: 'center', m: 3 }}>
+                        All tournaments:
+                    </Typography>
+                    <Grid container spacing={3}>
+                        {tournaments.map((tournament) => (
+                            <Grid columns={{ xs: 12, sm: 6, md: 4 }} key={tournament.id}>
+                                <Card
+                                    sx={{
+                                        height: '100%',
+                                        maxWidth: '350px',
+                                        display: 'flex',
+                                        flexDirection: 'column',
+                                        p: 2,
+                                    }}
                                 >
-                                    <CardContent sx={{ flexGrow: 1, width: '100%' }}>
-                                        <Typography variant="h5" component="div" gutterBottom>
-                                            {tournament.name}
-                                        </Typography>
-                                        <Typography sx={{ mb: 1 }} color="text.secondary">
-                                            Discipline: {tournament.discipline}
-                                        </Typography>
-                                        <Typography variant="body2" color="text.secondary">
-                                            Location: {tournament.location}
-                                        </Typography>
-                                        <Typography variant="body2" color="text.secondary">
-                                            Date: {new Date(tournament.time).toLocaleDateString()}
-                                        </Typography>
-                                        <Typography variant="body2" color="text.secondary">
-                                            Max Participants: {tournament.maxParticipants}
-                                        </Typography>
-                                        <Typography variant="body2" color="text.secondary">
-                                            Application Deadline:{' '}
-                                            {new Date(tournament.applicationDeadline).toLocaleDateString()}
-                                        </Typography>
-                                    </CardContent>
-                                </CardActionArea>
-                            </Card>
-                        </Grid>
-                    ))}
-                </Grid>
+                                    <CardActionArea
+                                        component={Link}
+                                        href={`/tournament/${tournament.id}`}
+                                        sx={{ flexGrow: 1, display: 'flex', flexDirection: 'column' }}
+                                    >
+                                        <CardContent sx={{ flexGrow: 1, width: '100%' }}>
+                                            <Typography variant="h4" component="div" gutterBottom noWrap>
+                                                {tournament.name}
+                                            </Typography>
+                                            <Typography sx={{ mb: 1 }} color="text.secondary" noWrap>
+                                                <b>Discipline</b>: {tournament.discipline}
+                                            </Typography>
+                                            <Typography variant="body2" color="text.secondary" noWrap>
+                                                <b>Location</b>: {tournament.location}
+                                            </Typography>
+                                            <Typography variant="body2" color="text.secondary" noWrap>
+                                                <b>Date</b>: {new Date(tournament.time).toLocaleDateString()}
+                                            </Typography>
+                                            <Typography variant="body2" color="text.secondary" noWrap>
+                                                <b>Max Participants</b>: {tournament.maxParticipants}
+                                            </Typography>
+                                            <Typography variant="body2" color="text.secondary" noWrap>
+                                                <b>Application Deadline</b>:{' '}
+                                                {new Date(tournament.applicationDeadline).toLocaleDateString()}
+                                            </Typography>
+                                        </CardContent>
+                                    </CardActionArea>
+                                </Card>
+                            </Grid>
+                        ))}
+                    </Grid>
+                </>
             )}
 
             {tournaments.length > 0 && totalPages > 1 && (

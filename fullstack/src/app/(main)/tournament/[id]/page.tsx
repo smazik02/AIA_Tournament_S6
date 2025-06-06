@@ -1,9 +1,10 @@
 import { auth } from '@/lib/auth';
 import { headers } from 'next/headers';
-import { getTournament } from '@/data-access/tournaments';
+import { getTournament, getTournamentParticipants } from '@/data-access/tournaments';
 import { notFound } from 'next/navigation';
 import {
     Avatar,
+    AvatarGroup,
     Box,
     Button,
     Card,
@@ -15,17 +16,26 @@ import {
     ListItemAvatar,
     ListItemText,
     Paper,
+    Tooltip,
     Typography,
 } from '@mui/material';
-import { Business, Edit, EmojiEvents, Event, Group, HowToReg, LocationOn, Person } from '@mui/icons-material';
+import { Business, Edit, EmojiEvents, Event, Group, HowToReg, LocationOn, People, Person } from '@mui/icons-material';
 import Link from 'next/link';
 import ApplyToTournamentForm from '@/components/main/tournament/ApplyToTournamentForm';
 import { GoogleMapsEmbed } from '@next/third-parties/google';
 import AddSponsorModal from '@/components/main/tournament/AddSponsorModal';
 import RemoveTournamentButton from '@/components/main/tournament/RemoveTournamentButton';
+import { Metadata } from 'next';
+import { stringAvatar } from '@/components/avatar.utils';
 
 interface TournamentPageProps {
     params: Promise<{ id: string }>;
+}
+
+export async function generateMetadata({ params }: TournamentPageProps): Promise<Metadata> {
+    const { id } = await params;
+    const tournamentName = await getTournament(id).then((tournament) => tournament?.name ?? '');
+    return { title: `Details: ${tournamentName}` };
 }
 
 async function TournamentPage({ params }: TournamentPageProps) {
@@ -36,6 +46,8 @@ async function TournamentPage({ params }: TournamentPageProps) {
     if (!tournament) {
         notFound();
     }
+
+    const participants = await getTournamentParticipants(id);
 
     const rankedPlayersCount = tournament.participants.length;
 
@@ -55,6 +67,7 @@ async function TournamentPage({ params }: TournamentPageProps) {
     const isOwner = session?.user !== undefined && tournament.organizerId === session.user.id;
     const participates =
         session?.user !== undefined && tournament.participants.find((p) => p.userId === session.user.id) !== undefined;
+    const pastApplicationDate = tournament.applicationDeadline < new Date();
 
     return (
         <Container maxWidth="md" sx={{ py: 4 }}>
@@ -178,6 +191,42 @@ async function TournamentPage({ params }: TournamentPageProps) {
                     </Box>
                 )}
 
+                {participants.length > 0 && (
+                    <Box mt={4}>
+                        <Typography
+                            variant="h5"
+                            component="h2"
+                            gutterBottom
+                            sx={{ display: 'flex', alignItems: 'center' }}
+                        >
+                            <People sx={{ mr: 1 }} color="primary" /> Participants
+                        </Typography>
+                        <Box display="flex" sx={{ mt: 2 }}>
+                            <AvatarGroup max={5} total={participants.length}>
+                                {participants.map((participant) => (
+                                    <Box key={participant.id}>
+                                        <Tooltip title={participant.user.name}>
+                                            {participant.user.image !== null ? (
+                                                <Avatar
+                                                    key={participant.id}
+                                                    alt={participant.user.name}
+                                                    src={participant.user.image}
+                                                />
+                                            ) : (
+                                                <Avatar
+                                                    key={participant.id}
+                                                    alt={participant.user.name}
+                                                    {...stringAvatar(participant.user.name)}
+                                                />
+                                            )}
+                                        </Tooltip>
+                                    </Box>
+                                ))}
+                            </AvatarGroup>
+                        </Box>
+                    </Box>
+                )}
+
                 <Box mt={4}>
                     <Typography variant="h5" component="h2" gutterBottom sx={{ display: 'flex', alignItems: 'center' }}>
                         <Business sx={{ mr: 1 }} color="primary" /> Sponsors
@@ -201,7 +250,7 @@ async function TournamentPage({ params }: TournamentPageProps) {
                                     {sponsor.logoUrl && (
                                         <ListItemAvatar>
                                             <Avatar src={sponsor.logoUrl} alt={sponsor.name}>
-                                                <Business /> {/* Fallback icon */}
+                                                <Business />
                                             </Avatar>
                                         </ListItemAvatar>
                                     )}
@@ -233,7 +282,11 @@ async function TournamentPage({ params }: TournamentPageProps) {
                                 mt: 2,
                             }}
                         >
-                            <ApplyToTournamentForm tournamentId={tournament.id} participates={participates} />
+                            <ApplyToTournamentForm
+                                tournamentId={tournament.id}
+                                participates={participates}
+                                pastDate={pastApplicationDate}
+                            />
                         </Box>
                     </Grid>
                     {isOwner && (

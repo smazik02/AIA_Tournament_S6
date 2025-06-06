@@ -7,7 +7,7 @@ import { Suspense } from 'react';
 import UpdateTournamentForm from '@/components/main/tournament/UpdateTournamentForm';
 
 export const metadata: Metadata = {
-    title: 'Edit tournament',
+    title: 'Update tournament',
 };
 
 interface UpdateTournamentPageProps {
