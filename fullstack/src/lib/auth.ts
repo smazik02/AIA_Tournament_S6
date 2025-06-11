@@ -7,6 +7,8 @@ export const MIN_PASSWORD_LENGTH = 8;
 export const MAX_PASSWORD_LENGTH = 128;
 export const PASSWORD_TOKEN_EXPIRES_IN = 60 * 60 * 24;
 
+console.log(`BETTER_AUTH_SECRET=${process.env.BETTER_AUTH_SECRET}`);
+
 export const auth = betterAuth({
     database: prismaAdapter(prisma, {
         provider: 'postgresql',
