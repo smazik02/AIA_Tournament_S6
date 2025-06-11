@@ -18,6 +18,6 @@ export function stringAvatar(name: string) {
         sx: {
             bgColor: stringToColor(name),
         },
-        children: `${name.split(' ')[0][0]}${name.split(' ')[1][0]}`,
+        children: `${name.split(' ')[0][0]}${name.split(' ')?.[1]?.[0] ?? ''}`,
     };
 }
