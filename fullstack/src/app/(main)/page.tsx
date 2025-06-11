@@ -4,17 +4,17 @@ import CreateTournamentButton from '@/components/main/tournament/CreateTournamen
 import TournamentPagination from '@/components/main/tournament/TournamentPagination';
 import Link from 'next/link';
 
-const ITEMS_PER_PAGE = 10;
+const ITEMS_PER_PAGE = 12;
 
 interface HomePageProps {
     searchParams: Promise<{ [key: string]: string | undefined }>;
 }
 
 async function Home({ searchParams }: HomePageProps) {
-    const { takeQuery = ITEMS_PER_PAGE, skipQuery = 0 } = await searchParams;
+    let { take = ITEMS_PER_PAGE, skip = 0 } = await searchParams;
 
-    const take = isNaN(+takeQuery) || +takeQuery <= 0 ? ITEMS_PER_PAGE : +takeQuery;
-    const skip = isNaN(+skipQuery) || +skipQuery < 0 ? 0 : +skipQuery;
+    take = isNaN(+take) || +take <= 0 ? ITEMS_PER_PAGE : +take;
+    skip = isNaN(+skip) || +skip < 0 ? 0 : +skip;
 
     const tournaments = await getAllTournamentsPaged({ skip, take });
     const totalTournaments = await getTournamentsCount();
@@ -27,15 +27,7 @@ async function Home({ searchParams }: HomePageProps) {
             <CreateTournamentButton />
 
             {totalTournaments > 0 && totalPages > 1 && (
-                <Box
-                    sx={{
-                        display: 'flex',
-                        justifyContent: 'space-between',
-                        alignItems: 'center',
-                        width: '100%',
-                        mb: 2,
-                    }}
-                >
+                <Box sx={{ display: 'flex', justifyContent: 'center', width: '100%', mt: 3 }}>
                     <TournamentPagination count={totalPages} page={currentPage} take={take} />
                 </Box>
             )}
@@ -49,13 +41,13 @@ async function Home({ searchParams }: HomePageProps) {
                     <Typography variant="h4" sx={{ textAlign: 'center', m: 3 }}>
                         All tournaments:
                     </Typography>
-                    <Grid container spacing={3}>
+                    <Grid container spacing={3} sx={{ justifyContent: 'center' }}>
                         {tournaments.map((tournament) => (
                             <Grid columns={{ xs: 12, sm: 6, md: 4 }} key={tournament.id}>
                                 <Card
                                     sx={{
                                         height: '100%',
-                                        maxWidth: '350px',
+                                        width: '320px',
                                         display: 'flex',
                                         flexDirection: 'column',
                                         p: 2,
@@ -67,7 +59,7 @@ async function Home({ searchParams }: HomePageProps) {
                                         sx={{ flexGrow: 1, display: 'flex', flexDirection: 'column' }}
                                     >
                                         <CardContent sx={{ flexGrow: 1, width: '100%' }}>
-                                            <Typography variant="h4" component="div" gutterBottom noWrap>
+                                            <Typography variant="h5" component="div" gutterBottom noWrap>
                                                 {tournament.name}
                                             </Typography>
                                             <Typography sx={{ mb: 1 }} color="text.secondary" noWrap>
