@@ -2,8 +2,15 @@
 
 import { FormEvent, useState } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
-import { Box, Button, FormControl, TextField } from '@mui/material';
+import { Box, Button, FormControl, SxProps, TextField, Typography } from '@mui/material';
 import { authClient } from '@/lib/auth-client';
+import FormContainer from '../form/FormContainer';
+import FormCard from '../form/FormCard';
+
+const containerStyles: SxProps = {
+    direction: 'column',
+    justifyContent: 'space-between',
+};
 
 function PasswordResetForm() {
     const [passwordError, setPasswordError] = useState(false);
@@ -64,45 +71,56 @@ function PasswordResetForm() {
 
     if (!token) {
         return (
-            <>
-                Incorrect reset password link or another error has occurred! Try again or contact the AIA Tournament
-                team.
-            </>
+            <FormContainer sx={containerStyles}>
+                <FormCard>
+                    <Typography variant="h5" sx={{ textAlign: 'center' }}>
+                        Incorrect reset password link or another error has occurred! Try again or contact the AIA
+                        Tournament team.
+                    </Typography>
+                </FormCard>
+            </FormContainer>
         );
     }
 
     return (
-        <Box component="form" sx={{ display: 'flex', flexDirection: 'column', gap: 2 }} onSubmit={handleSubmit}>
-            <FormControl>
-                <TextField
-                    autoComplete="new-password"
-                    name="new-password"
-                    label="New Password"
-                    fullWidth
-                    id="new-password"
-                    type="password"
-                    error={passwordError}
-                    helperText={passwordErrorMessage}
-                    color={passwordError ? 'error' : 'primary'}
-                />
-            </FormControl>
-            <FormControl>
-                <TextField
-                    autoComplete="repeat-password"
-                    name="repeat-password"
-                    label="Repeat New Password"
-                    fullWidth
-                    id="repeat-password"
-                    type="password"
-                    error={passwordError}
-                    helperText={passwordErrorMessage}
-                    color={passwordError ? 'error' : 'primary'}
-                />
-            </FormControl>
-            <Button type="submit" fullWidth variant="contained">
-                Reset password
-            </Button>
-        </Box>
+        <FormContainer sx={containerStyles}>
+            <FormCard>
+                <Typography component="h1" variant="h4" sx={{ width: '100%' }}>
+                    Reset password
+                </Typography>
+                <Box component="form" sx={{ display: 'flex', flexDirection: 'column', gap: 2 }} onSubmit={handleSubmit}>
+                    <FormControl>
+                        <TextField
+                            autoComplete="new-password"
+                            name="new-password"
+                            label="New Password"
+                            fullWidth
+                            id="new-password"
+                            type="password"
+                            error={passwordError}
+                            helperText={passwordErrorMessage}
+                            color={passwordError ? 'error' : 'primary'}
+                        />
+                    </FormControl>
+                    <FormControl>
+                        <TextField
+                            autoComplete="repeat-password"
+                            name="repeat-password"
+                            label="Repeat New Password"
+                            fullWidth
+                            id="repeat-password"
+                            type="password"
+                            error={passwordError}
+                            helperText={passwordErrorMessage}
+                            color={passwordError ? 'error' : 'primary'}
+                        />
+                    </FormControl>
+                    <Button type="submit" fullWidth variant="contained">
+                        Reset password
+                    </Button>
+                </Box>
+            </FormCard>
+        </FormContainer>
     );
 }
 

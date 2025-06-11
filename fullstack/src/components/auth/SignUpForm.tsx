@@ -114,7 +114,7 @@ function SignUpForm() {
     if (afterSignUp) {
         return (
             <FormContainer sx={containerStyles}>
-                <FormCard variant="outlined">
+                <FormCard>
                     <Typography variant="h5" sx={{ textAlign: 'center' }}>
                         A verification mail has been sent. Please verify your email before signing in.
                     </Typography>
@@ -125,7 +125,7 @@ function SignUpForm() {
 
     return (
         <FormContainer sx={containerStyles}>
-            <FormCard variant="outlined">
+            <FormCard>
                 <Typography component="h1" variant="h4" sx={{ width: '100%' }}>
                     Sign up
                 </Typography>

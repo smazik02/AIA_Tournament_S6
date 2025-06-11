@@ -7,16 +7,11 @@ import DeleteIcon from '@mui/icons-material/Delete';
 interface RemoveTournamentButtonProps {
     tournamentId: string;
     sponsorId: string;
-    isHidden: boolean;
 }
 
-function RemoveTournamentButton({ tournamentId, sponsorId, isHidden }: RemoveTournamentButtonProps) {
+function RemoveTournamentButton({ tournamentId, sponsorId }: RemoveTournamentButtonProps) {
     return (
-        <IconButton
-            hidden={isHidden}
-            color="secondary"
-            onClick={() => deleteTournamentSponsorAction(tournamentId, sponsorId)}
-        >
+        <IconButton color="secondary" onClick={() => deleteTournamentSponsorAction(tournamentId, sponsorId)}>
             <DeleteIcon />
         </IconButton>
     );

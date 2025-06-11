@@ -58,7 +58,7 @@ function AppNavBar() {
                     <div>
                         <IconButton size="large" color="inherit" onClick={handleMenu}>
                             {session ? (
-                                session.user.image !== null ? (
+                                session.user.image !== null && session.user.image !== undefined ? (
                                     <Avatar alt={session.user.name} src={session.user.image} />
                                 ) : (
                                     <Avatar alt={session.user.name} {...stringAvatar(session.user.name)} />

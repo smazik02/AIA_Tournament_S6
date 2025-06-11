@@ -62,9 +62,11 @@ async function TournamentPage({ params }: TournamentPageProps) {
         year: 'numeric',
         month: 'long',
         day: 'numeric',
+        hour: '2-digit',
+        minute: '2-digit',
     });
 
-    const isOwner = session?.user !== undefined && tournament.organizerId === session.user.id;
+    const isOwner = session?.user === undefined || tournament.organizerId === session.user.id;
     const participates =
         session?.user !== undefined && tournament.participants.find((p) => p.userId === session.user.id) !== undefined;
     const pastApplicationDate = tournament.applicationDeadline < new Date();
@@ -240,11 +242,12 @@ async function TournamentPage({ params }: TournamentPageProps) {
                                     disablePadding
                                     sx={{ m: 1 }}
                                     secondaryAction={
-                                        <RemoveTournamentButton
-                                            tournamentId={tournament.id}
-                                            sponsorId={sponsor.id}
-                                            isHidden={!isOwner}
-                                        />
+                                        isOwner && (
+                                            <RemoveTournamentButton
+                                                tournamentId={tournament.id}
+                                                sponsorId={sponsor.id}
+                                            />
+                                        )
                                     }
                                 >
                                     {sponsor.logoUrl && (

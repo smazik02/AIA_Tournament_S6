@@ -109,7 +109,7 @@ function SignInForm() {
         <>
             <ForgotPasswordDialog isOpen={isResetPasswordOpen} handleClose={() => setIsResetPasswordOpen(false)} />
             <FormContainer sx={containerStyles}>
-                <FormCard variant="outlined">
+                <FormCard>
                     <Typography component="h1" variant="h4" sx={{ width: '100%' }}>
                         Sign in
                     </Typography>
